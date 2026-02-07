@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salad Byte - Coming Soon</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: #FFFFFF; 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #2E7D32;
+        }
+        .container { text-align: center; max-width: 600px; padding: 20px; }
+        .logo { width: 200px; height: auto; margin-bottom: 20px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+        h1 { font-size: 3.5em; margin-bottom: 10px; font-weight: bold; color: #1B5E20; }
+        p { font-size: 1.4em; margin-bottom: 30px; color: #388E3C; opacity: 0.9; }
+        .countdown { display: flex; justify-content: center; gap: 20px; margin: 40px 0; flex-wrap: wrap; }
+        .time-unit { background: #E8F5E8; padding: 20px; border-radius: 15px; min-width: 80px; border: 2px solid #C8E6C9; }
+        .number { font-size: 2.5em; font-weight: bold; display: block; color: #1B5E20; }
+        .label { font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; color: #4CAF50; }
+        form { display: flex; max-width: 400px; margin: 0 auto 30px; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        input { padding: 15px; border: 2px solid #C8E6C9; border-radius: 30px; font-size: 1em; flex: 1; min-width: 250px; background: #F1F8E9; color: #2E7D32; }
+        input::placeholder { color: #81C784; }
+        input.success { border-color: #4CAF50; background: #E8F5E8; }
+        button { padding: 15px 30px; background: #4CAF50; color: white; border: none; border-radius: 30px; font-size: 1em; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+        button:hover:not(:disabled) { background: #45a049; transform: scale(1.05); }
+        button:disabled { background: #81C784; cursor: not-allowed; }
+        .message { margin-top: 15px; font-size: 1.1em; color: #4CAF50; font-weight: 500; min-height: 20px; }
+        .social { margin-top: 30px; }
+        .social a { color: #4CAF50; font-size: 1.5em; margin: 0 15px; text-decoration: none; transition: all 0.3s; }
+        .social a:hover { color: #1B5E20; transform: scale(1.2); }
+        @media (max-width: 768px) { 
+            h1 { font-size: 2.5em; } 
+            .countdown { gap: 10px; } 
+            .time-unit { padding: 15px; min-width: 70px; } 
+            .number { font-size: 2em; } 
+            form { flex-direction: column; } 
+            input { min-width: auto; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="logo.png" alt="Salad Byte Logo" class="logo">
+        <h1>Salad Byte</h1>
+        <p>Healthy bowls for busy days. Coming soon to Kharadi.</p>
+        
+        <div class="countdown" id="countdown">
+            <div class="time-unit"><span class="number" id="days">00</span><span class="label">Days</span></div>
+            <div class="time-unit"><span class="number" id="hours">00</span><span class="label">Hours</span></div>
+            <div class="time-unit"><span class="number" id="minutes">00</span><span class="label">Minutes</span></div>
+            <div class="time-unit"><span class="number" id="seconds">00</span><span class="label">Seconds</span></div>
+        </div>
+        
+        <!-- VISIBLE FORM - Direct Google Form submission with smooth UX -->
+        <form id="notifyForm" 
+              action="https://docs.google.com/forms/d/e/1FAIpQLSeSpuQO-POhiN10rLZ-Pv4_LsivZRmL6uGcnp3o0jzMS8skdA/formResponse" 
+              method="POST" 
+              target="hiddenFrame">
+            <input type="email" 
+                   name="entry.956095204" 
+                   id="email" 
+                   placeholder="Enter email for launch alerts" 
+                   required>
+            <button type="submit">Notify Me</button>
+            <div class="message" id="message"></div>
+        </form>
+        
+        <!-- Hidden iframe to catch redirect -->
+        <iframe name="hiddenFrame" style="display: none;"></iframe>
+        
+        <div class="social">
+            <a href="https://instagram.com/saladbytepune" target="_blank">📱</a>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer
+        const launchDate = new Date("2026-04-01T00:00:00").getTime();
+        const countdown = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = launchDate - now;
+            document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+            document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+            document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            if (distance < 0) {
+                clearInterval(countdown);
+                document.getElementById("countdown").innerHTML = '<div class="time-unit"><span class="number" style="color:#4CAF50;">Live!</span></div>';
+            }
+        }, 1000);
+
+        // Smooth form submission handling
+        document.getElementById('notifyForm').addEventListener('submit', function(e) {
+            const button = this.querySelector('button');
+            const emailInput = document.getElementById('email');
+            const message = document.getElementById('message');
+            
+            // Show sending state
+            button.disabled = true;
+            button.textContent = 'Sending...';
+            message.textContent = '';
+            
+            // Reset after 3 seconds (submission happens in background iframe)
+            setTimeout(() => {
+                button.disabled = false;
+                button.textContent = 'Notify Me';
+                emailInput.classList.add('success');
+                message.textContent = '✅ Thanks! You\'re signed up for launch updates!';
+                this.reset();
+                emailInput.classList.remove('success');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
