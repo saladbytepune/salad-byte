@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salad Byte — Tomorrow's Viral Post Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep: #1B4332;
+    --green-mid: #2D6A4F;
+    --green-bright: #52B788;
+    --green-light: #B7E4C7;
+    --green-pale: #D8F3DC;
+    --amber: #F4A261;
+    --red-hot: #E76F51;
+    --cream: #FEFAE0;
+    --white: #FFFFFF;
+    --ink: #0D1F17;
+    --muted: #6B8F72;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* SCANLINE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--green-deep) 0%, #0d2b1e 60%, #061a0f 100%);
+    padding: 60px 24px 50px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 2px solid var(--green-bright);
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(82,183,136,0.15) 0%, transparent 70%);
+    top: -200px; right: -100px;
+  }
+
+  .brand-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--green-bright);
+    background: rgba(82,183,136,0.15);
+    border: 1px solid rgba(82,183,136,0.4);
+    padding: 6px 14px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  header h1 span { color: var(--green-bright); }
+
+  header p {
+    font-size: 16px;
+    color: var(--green-light);
+    max-width: 560px;
+    font-weight: 300;
+  }
+
+  .meta-pills {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .pill-reel { background: rgba(231,111,81,0.2); color: var(--red-hot); border: 1px solid rgba(231,111,81,0.4); }
+  .pill-time { background: rgba(244,162,97,0.2); color: var(--amber); border: 1px solid rgba(244,162,97,0.4); }
+  .pill-format { background: rgba(82,183,136,0.2); color: var(--green-bright); border: 1px solid rgba(82,183,136,0.4); }
+
+  /* SECTION */
+  section {
+    padding: 48px 0;
+    border-bottom: 1px solid rgba(82,183,136,0.15);
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--green-bright);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.8;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--green-light);
+    margin-bottom: 10px;
+  }
+
+  p { font-size: 15px; color: rgba(255,255,255,0.78); line-height: 1.7; margin-bottom: 12px; }
+
+  /* THE POST CARD */
+  .post-card {
+    background: linear-gradient(145deg, #0f2a1e, #162d20);
+    border: 1px solid rgba(82,183,136,0.3);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+
+  .post-card-header {
+    background: linear-gradient(90deg, var(--green-mid), var(--green-deep));
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .post-card-header .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--green-pale);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .post-body { padding: 28px 28px 24px; }
+
+  /* HOOK BOX */
+  .hook-box {
+    background: linear-gradient(135deg, rgba(231,111,81,0.12), rgba(244,162,97,0.08));
+    border: 1px solid rgba(231,111,81,0.35);
+    border-left: 4px solid var(--red-hot);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 22px;
+    margin-bottom: 28px;
+  }
+
+  .hook-box .hook-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--red-hot);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .hook-box .hook-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.35;
+  }
+
+  /* VISUAL DESCRIPTION */
+  .visual-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+
+  .visual-box .vl { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+
+  /* TIMELINE */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+
+  .tl-item {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 0 16px;
+    align-items: start;
+    position: relative;
+  }
+
+  .tl-item:not(:last-child) .tl-line {
+    position: absolute;
+    left: 17px;
+    top: 28px;
+    bottom: -4px;
+    width: 2px;
+    background: rgba(82,183,136,0.25);
+  }
+
+  .tl-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--green-deep);
+    border: 2px solid var(--green-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--green-bright);
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tl-content {
+    padding: 2px 0 28px;
+  }
+
+  .tl-content h3 {
+    font-size: 15px;
+    color: var(--green-bright);
+    margin-bottom: 6px;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .tl-content p, .tl-content li {
+    font-size: 14px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.6;
+    margin-bottom: 6px;
+  }
+
+  .tl-content ul { list-style: none; padding: 0; }
+  .tl-content li::before { content: '→ '; color: var(--green-bright); font-weight: 700; }
+
+  /* CAPTION BOX */
+  .caption-box {
+    background: #0a1f14;
+    border: 1px solid rgba(82,183,136,0.25);
+    border-radius: 12px;
+    padding: 24px 26px;
+    margin-bottom: 24px;
+    font-family: 'DM Sans', sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .caption-box::before {
+    content: '"';
+    position: absolute;
+    top: -10px; left: 16px;
+    font-size: 100px;
+    color: rgba(82,183,136,0.08);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  .caption-box .cap-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--green-bright);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .copy-badge {
+    background: rgba(82,183,136,0.2);
+    border: 1px solid rgba(82,183,136,0.4);
+    color: var(--green-bright);
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+  .copy-badge:hover { background: rgba(82,183,136,0.4); }
+
+  .caption-text {
+    font-size: 15px;
+    color: var(--cream);
+    line-height: 1.8;
+    white-space: pre-line;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HASHTAG CLOUD */
+  .hashtag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .hashtag {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--green-bright);
+    background: rgba(82,183,136,0.1);
+    border: 1px solid rgba(82,183,136,0.25);
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .hashtag:hover { background: rgba(82,183,136,0.2); }
+
+  .hashtag.hot { color: var(--amber); background: rgba(244,162,97,0.1); border-color: rgba(244,162,97,0.3); }
+
+  /* CTA BOX */
+  .cta-box {
+    background: linear-gradient(135deg, rgba(82,183,136,0.2), rgba(45,106,79,0.3));
+    border: 1px solid rgba(82,183,136,0.5);
+    border-radius: 10px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .cta-icon { font-size: 28px; flex-shrink: 0; }
+  .cta-text { font-size: 15px; color: var(--white); font-weight: 500; }
+
+  /* ALGORITHM GRID */
+  .algo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .algo-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px 22px;
+    transition: border-color 0.2s;
+  }
+  .algo-card:hover { border-color: rgba(82,183,136,0.3); }
+
+  .algo-card .rank {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .rank-1 { color: var(--red-hot); }
+  .rank-2 { color: var(--amber); }
+  .rank-3 { color: var(--green-bright); }
+
+  .algo-card h3 { font-size: 14px; color: var(--white); margin-bottom: 6px; }
+  .algo-card p { font-size: 13px; color: rgba(255,255,255,0.55); margin: 0; }
+
+  /* STEP BLOCKS */
+  .step-block {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 18px;
+    align-items: start;
+    padding: 22px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .step-block:last-child { border-bottom: none; }
+
+  .step-num {
+    width: 48px; height: 48px;
+    background: var(--green-deep);
+    border: 2px solid var(--green-bright);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--green-bright);
+    flex-shrink: 0;
+  }
+
+  .step-content h3 { font-size: 16px; color: var(--white); margin-bottom: 6px; }
+  .step-content p { font-size: 14px; margin-bottom: 6px; }
+
+  .step-time {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--amber);
+    background: rgba(244,162,97,0.12);
+    border: 1px solid rgba(244,162,97,0.3);
+    padding: 2px 8px;
+    border-radius: 100px;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .do-dont {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .do-box, .dont-box {
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .do-box { background: rgba(82,183,136,0.08); border: 1px solid rgba(82,183,136,0.25); }
+  .dont-box { background: rgba(231,111,81,0.08); border: 1px solid rgba(231,111,81,0.25); }
+
+  .do-box h4 { color: var(--green-bright); font-size: 13px; font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-bottom: 12px; }
+  .dont-box h4 { color: var(--red-hot); font-size: 13px; font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-bottom: 12px; }
+
+  .do-box li, .dont-box li { font-size: 13px; list-style: none; padding: 4px 0; }
+  .do-box li::before { content: '✓ '; color: var(--green-bright); font-weight: 700; }
+  .dont-box li::before { content: '✗ '; color: var(--red-hot); font-weight: 700; }
+  .do-box li, .dont-box li { color: rgba(255,255,255,0.72); }
+
+  /* AUDIO SECTION */
+  .audio-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+  .audio-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .audio-icon { font-size: 20px; }
+  .audio-name { font-size: 14px; color: var(--white); font-weight: 500; }
+  .audio-vibe { font-size: 12px; color: var(--muted); }
+  .audio-rank { margin-left: auto; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--amber); }
+
+  /* FIRST HOUR CHECKLIST */
+  .checklist { list-style: none; margin-top: 16px; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 14px;
+    color: rgba(255,255,255,0.78);
+  }
+  .checklist li:last-child { border: none; }
+  .check-box {
+    width: 22px; height: 22px; min-width: 22px;
+    border: 2px solid var(--green-bright);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .check-box:hover { background: rgba(82,183,136,0.2); }
+  .check-box.done { background: var(--green-bright); }
+
+  /* BOOST SECTION */
+  .boost-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .boost-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+
+  .boost-card .boost-icon { font-size: 30px; margin-bottom: 10px; }
+  .boost-card h4 { font-family: 'Syne', sans-serif; font-size: 14px; color: var(--white); margin-bottom: 6px; }
+  .boost-card p { font-size: 12px; color: rgba(255,255,255,0.55); margin: 0; }
+
+  /* FOOTER */
+  footer {
+    background: #050f09;
+    padding: 40px 24px;
+    text-align: center;
+    border-top: 1px solid rgba(82,183,136,0.2);
+  }
+
+  footer p { font-size: 13px; color: var(--muted); margin: 0; }
+  footer strong { color: var(--green-bright); }
+
+  /* SCROLL ANIMATIONS */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* HIGHLIGHT */
+  .highlight { color: var(--green-bright); font-weight: 600; }
+  .highlight-amber { color: var(--amber); font-weight: 600; }
+  .highlight-red { color: var(--red-hot); font-weight: 600; }
+
+  /* NOTE BOX */
+  .note-box {
+    background: rgba(244,162,97,0.08);
+    border: 1px solid rgba(244,162,97,0.25);
+    border-left: 4px solid var(--amber);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin: 16px 0;
+  }
+  .note-box p { font-size: 13px; color: rgba(255,255,255,0.7); margin: 0; }
+  .note-box p strong { color: var(--amber); }
+
+  @media (max-width: 600px) {
+    .do-dont { grid-template-columns: 1fr; }
+    .algo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="brand-tag">🥗 @saladbytepune · Viral Post Playbook</div>
+    <h1>Tomorrow's Post.<br><span>Engineered to Go Viral.</span></h1>
+    <p>One Reel. Fully scripted. Built on the 2026 Instagram algorithm — optimised for Pune's IT crowd.</p>
+    <div class="meta-pills">
+      <span class="pill pill-reel">🎬 Reel Format</span>
+      <span class="pill pill-time">⏰ 12:30 PM IST</span>
+      <span class="pill pill-format">30–45 seconds</span>
+      <span class="pill pill-format">THE BUILD pillar</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- WHY THIS WORKS -->
+  <section>
+    <div class="section-label">Algorithm Intel</div>
+    <h2>Why This Post Format Works Right Now</h2>
+    <p>Based on the latest 2026 Instagram algorithm data, here are the <span class="highlight">3 signals</span> that decide whether your Reel goes viral or dies in the first hour:</p>
+
+    <div class="algo-grid">
+      <div class="algo-card">
+        <div class="rank rank-1">#1</div>
+        <h3>DM Shares = Virality</h3>
+        <p>When someone sends your Reel to a friend via DM, Instagram treats it as the strongest quality signal. <span style="color:var(--red-hot)">694,000 Reels are DMed every minute.</span> We've engineered this post to be share-worthy to IT colleagues.</p>
+      </div>
+      <div class="algo-card">
+        <div class="rank rank-2">#2</div>
+        <h3>3-Second Hook</h3>
+        <p>50% of viewers drop off in the first 3 seconds. The algorithm interprets early drop-off as poor content. Our hook is designed to <span style="color:var(--amber)">stop the thumb in under 1.5 seconds</span> with a relatable pain point.</p>
+      </div>
+      <div class="algo-card">
+        <div class="rank rank-3">#3</div>
+        <h3>Watch Time + Completion</h3>
+        <p>Instagram tests your Reel on non-followers first. High completion rate = pushed to Explore. We've scripted this as a <span style="color:var(--green-bright)">30–45 second tight loop</span> designed for 80%+ completion.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE POST -->
+  <section>
+    <div class="section-label">Tomorrow's Post</div>
+    <h2>The Post: Fully Ready to Shoot & Upload</h2>
+
+    <!-- FORMAT CARD -->
+    <div class="post-card">
+      <div class="post-card-header">
+        <span>🎬</span>
+        <span class="label">Format: Reel · Duration: 30–45 sec · Post at: 12:30 PM IST Wednesday</span>
+      </div>
+      <div class="post-body">
+
+        <!-- HOOK -->
+        <div class="hook-box">
+          <div class="hook-label">⚡ First 3-Second Hook (Text on Screen + Voiceover)</div>
+          <div class="hook-text">"Pune IT parks mein lunch break hoti hai 30 minutes.<br>Yeh banta hai 4 minutes mein. 🤯"</div>
+        </div>
+
+        <!-- VISUAL TIMELINE -->
+        <div class="visual-box">
+          <div class="vl">🎬 Shot-by-Shot Visual Script</div>
+          <div class="timeline">
+
+            <div class="tl-item">
+              <div class="tl-dot">1</div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <h3>0:00 – 0:03 · THE HOOK</h3>
+                <ul>
+                  <li>Open on a close-up of a stopwatch / phone timer starting at 0:00</li>
+                  <li>Bold white text on dark overlay: <em>"Banta hai 4 mins mein."</em></li>
+                  <li>Instantly shows the Salad Byte bowl being pulled out of the fridge, fully assembled</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot">2</div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <h3>0:03 – 0:12 · THE ASMR BUILD</h3>
+                <ul>
+                  <li>Fast-cut ASMR: knife slicing through roasted sweet potato (close-up)</li>
+                  <li>Soya chunks hitting the hot pan — that sizzle sound 🔥</li>
+                  <li>Quinoa being spooned — dry, close-up pour</li>
+                  <li>Text: <em>"42g protein. No maida. No regret."</em></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot">3</div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <h3>0:12 – 0:22 · THE DESI SPICE PATCH POUR</h3>
+                <ul>
+                  <li>SLOW MOTION: the Desi Spice Patch dressing pouring over the bowl</li>
+                  <li>Golden hour lighting. Steaming soya. Glistening vegetables.</li>
+                  <li>Text overlay: <em>"Desi Spice Patch — jeera, coriander, lemon. Fresh. Every. Day."</em></li>
+                  <li>Audio: satisfying liquid pour + bowl clink sound</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot">4</div>
+              <div class="tl-line"></div>
+              <div class="tl-content">
+                <h3>0:22 – 0:32 · THE RELATABLE PUNCHLINE</h3>
+                <ul>
+                  <li>Cut to: A phone notification — <em>"Sprint Planning starts in 5 mins"</em></li>
+                  <li>Hand reaches across frame, grabs the Salad Byte box, takes a bite</li>
+                  <li>Big text: <em>"Canteen: 😐 | Salad Byte: 😤⚡"</em></li>
+                  <li>Final frame: Bowl on desk with EON IT Park / Magarpatta building visible through window blur</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot">5</div>
+              <div class="tl-content">
+                <h3>0:32 – 0:40 · THE CTA LOOP</h3>
+                <ul>
+                  <li>End card with brand colors: <em>"Deploy your Build 🚀 Link in bio"</em></li>
+                  <li>Loop-back friendly: ends almost where it starts (timer / bowl visual)</li>
+                  <li>Add a 1-second loopable moment so rewatch triggers for the algorithm</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- CAPTION -->
+        <div class="caption-box">
+          <div class="cap-label">
+            📝 Caption (Copy-Paste Ready)
+            <span class="copy-badge" onclick="copyCaption()">COPY</span>
+          </div>
+          <div class="caption-text" id="captionText">Canteen mein line. Delivery mein 45 mins wait. 😤
+
+Hum dete hain 42g protein — 30 mins mein deploy. 🚀
+
+→ Soya Protocol (clean fuel, desi spice)
+→ Warm Quinoa base
+→ Desi Spice Patch dressing (jeera + coriander + lemon)
+→ 0 refined carbs. 0 regrets.
+
+Deploying daily to Kharadi 📍 Magarpatta 📍 Amanora
+
+Tumhara 3 PM crash? That's a bug. We have the patch. 💻
+
+🔗 Order link in bio — DM karo "BUILD" for today's menu.
+
+Tag karo us colleague ko jisko yeh chahiye. 👇</div>
+        </div>
+
+        <!-- HASHTAGS -->
+        <div>
+          <div class="vl" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;">Hashtags (Use All 15)</div>
+          <div class="hashtag-cloud">
+            <span class="hashtag hot">#PuneFood</span>
+            <span class="hashtag hot">#KharadiEats</span>
+            <span class="hashtag hot">#MagarpattaEats</span>
+            <span class="hashtag">#SaladByte</span>
+            <span class="hashtag">#SoyaProtocol</span>
+            <span class="hashtag">#CleanFuel</span>
+            <span class="hashtag hot">#PuneITLife</span>
+            <span class="hashtag">#HealthyPune</span>
+            <span class="hashtag">#WarmVeggiBuild</span>
+            <span class="hashtag hot">#PuneLunch</span>
+            <span class="hashtag">#DesiSpicePatch</span>
+            <span class="hashtag">#HighProtein</span>
+            <span class="hashtag hot">#PuneFoodie</span>
+            <span class="hashtag">#DeployYourBuild</span>
+            <span class="hashtag">#AmanoraPark</span>
+          </div>
+          <div class="note-box" style="margin-top:16px;">
+            <p><strong>Pro tip:</strong> Put hashtags in the <strong>first comment</strong>, not in the caption. Cleaner caption = more readable = more saves and shares. Post the hashtags immediately after uploading.</p>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-box" style="margin-top: 24px;">
+          <div class="cta-icon">📣</div>
+          <div class="cta-text"><strong>In-video CTA:</strong> "Tag karo us dost ko jisko Kharadi mein khaana dhundna padta hai." — This drives comments AND DMs, triggering both algorithm signals simultaneously.</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIO -->
+  <section>
+    <div class="section-label">Sound Strategy</div>
+    <h2>Recommended Audio Tracks</h2>
+    <p>About <span class="highlight">50% of Instagram users watch with sound off</span> — so always have text overlays. But trending audio gets you extra algorithmic distribution. Pick one:</p>
+
+    <div class="audio-list">
+      <div class="audio-item">
+        <div class="audio-icon">🔥</div>
+        <div>
+          <div class="audio-name">DtMF (currently trending India, Feb 2026)</div>
+          <div class="audio-vibe">High energy, fast-cut vibes — perfect for the build sequence</div>
+        </div>
+        <div class="audio-rank">TRENDING #1</div>
+      </div>
+      <div class="audio-item">
+        <div class="audio-icon">🍃</div>
+        <div>
+          <div class="audio-name">Lo-fi kitchen ASMR (original audio — record your own)</div>
+          <div class="audio-vibe">Sizzling, chopping, pouring sounds. Original audio builds your brand's audio identity.</div>
+        </div>
+        <div class="audio-rank">BRAND BUILDING</div>
+      </div>
+      <div class="audio-item">
+        <div class="audio-icon">⚡</div>
+        <div>
+          <div class="audio-name">Temperature x Sweet Dreams Altego Mix (trending Feb 2026)</div>
+          <div class="audio-vibe">Smooth + energetic, great for the dressing pour slow-mo moment</div>
+        </div>
+        <div class="audio-rank">TRENDING #2</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP BY STEP POSTING GUIDE -->
+  <section>
+    <div class="section-label">Posting Protocol</div>
+    <h2>Step-by-Step: How to Post It for Maximum Reach</h2>
+
+    <div class="timeline" style="margin-top: 8px;">
+
+      <div class="tl-item">
+        <div class="tl-dot" style="width:42px;height:42px;font-size:14px;">D-1</div>
+        <div class="tl-line"></div>
+        <div class="tl-content">
+          <div class="step-time">TONIGHT (Tuesday Evening)</div>
+          <h3>Shoot & Edit the Reel</h3>
+          <ul>
+            <li>Shoot in your kitchen using natural light + a ring light for close-ups</li>
+            <li>Film all 5 scenes (hook, ASMR build, dressing pour, punchline, end card)</li>
+            <li>Edit in CapCut or Instagram native editor — add text overlays to every scene</li>
+            <li>Add captions/subtitles (Instagram auto-captions work great)</li>
+            <li><strong style="color:var(--amber)">DO NOT add TikTok watermark — kills algorithmic reach</strong></li>
+            <li>Export at 1080×1920 (9:16) at 30fps minimum</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="width:42px;height:42px;font-size:14px;">1</div>
+        <div class="tl-line"></div>
+        <div class="tl-content">
+          <div class="step-time">WEDNESDAY 12:15 PM — 15 MINS BEFORE POSTING</div>
+          <h3>Pre-Heat Your Account</h3>
+          <ul>
+            <li>Post a Story: "Something is cooking in the lab 🔬 Dropping in 15 mins" with a countdown sticker</li>
+            <li>Reply to any pending DMs or comments on previous posts</li>
+            <li>Go to Explore tab and engage (like/comment) on 5–6 posts in your niche</li>
+            <li>This signals to the algorithm that you're an active user — boosts initial distribution</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="width:42px;height:42px;font-size:14px;">2</div>
+        <div class="tl-line"></div>
+        <div class="tl-content">
+          <div class="step-time">WEDNESDAY 12:30 PM — POSTING</div>
+          <h3>Upload the Reel</h3>
+          <ul>
+            <li>Upload natively through the Instagram app (not a third-party scheduler)</li>
+            <li>Add the caption (see above) — keep it clean, no hashtags in the caption body</li>
+            <li>Select a custom thumbnail: use the slow-mo dressing pour frame (most scroll-stopping)</li>
+            <li>Add location tag: <strong>Magarpatta City, Pune</strong> (highest IT footfall in Pune)</li>
+            <li>Tag relevant accounts if any customer/partner is featured</li>
+            <li>Turn on <strong>Remix</strong> so others can duet/react (free reach)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="width:42px;height:42px;font-size:14px;">3</div>
+        <div class="tl-line"></div>
+        <div class="tl-content">
+          <div class="step-time">IMMEDIATELY AFTER POSTING</div>
+          <h3>Post the Hashtags (First Comment)</h3>
+          <ul>
+            <li>Go to your post immediately and add all 15 hashtags as the <strong>first comment</strong></li>
+            <li>Also add in first comment: "📍 Delivering to Kharadi · Magarpatta · Amanora daily"</li>
+            <li>This keeps your caption clean while maximising discoverability</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="width:42px;height:42px;font-size:14px;">4</div>
+        <div class="tl-line"></div>
+        <div class="tl-content">
+          <div class="step-time">12:30 PM – 1:30 PM · THE GOLDEN HOUR</div>
+          <h3>The First-Hour Engagement Sprint</h3>
+          <ul>
+            <li><strong>Share the Reel to your Story</strong> with the text: "New drop 🚀 tap to watch"</li>
+            <li><strong>DM the Reel to 10–15 loyal customers/friends</strong> with a personal message like: "Bhai dekh yeh, tag kar apni team ko 😄"</li>
+            <li>Reply to EVERY comment that comes in within the first 60 minutes</li>
+            <li>Ask a follow-up question in your replies to generate more comments (e.g., "Kharadi mein ho kya?")</li>
+            <li>This spikes the engagement rate in the algorithm's initial test window</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="width:42px;height:42px;font-size:14px;">5</div>
+        <div class="tl-line"></div>
+        <div class="tl-content">
+          <div class="step-time">1:00 PM · STORY FOLLOW-UP</div>
+          <h3>Launch a Companion Story</h3>
+          <ul>
+            <li>Post a Poll Story: "Canteen lunch ya Salad Byte?" — Option A: 😐 Canteen / Option B: 🚀 Salad Byte</li>
+            <li>This drives Story views AND engagement, which boosts the Reel's distribution simultaneously</li>
+            <li>Use the Results from the poll as content for your next Story ("93% chose Salad Byte 👀")</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot" style="width:42px;height:42px;font-size:14px;">6</div>
+        <div class="tl-content">
+          <div class="step-time">6:00 PM · EVENING BOOST</div>
+          <h3>Second Wave Push</h3>
+          <ul>
+            <li>Post a Story showing the Reel's view count: "100 views in 5 hours 🔥 Kharadi mein viral ho raha hai"</li>
+            <li>Re-share the Reel to your Story with new text: "For the people who missed lunch 😤"</li>
+            <li>Respond to all remaining comments with a question to extend the conversation thread</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DO & DON'T -->
+  <section>
+    <div class="section-label">Critical Rules</div>
+    <h2>Do's & Don'ts for This Post</h2>
+    <div class="do-dont">
+      <div class="do-box">
+        <h4>✅ DO</h4>
+        <ul>
+          <li>Post at 12:30 PM sharp (peak lunch scroll time for IT workers)</li>
+          <li>Use original audio OR trending audio — never a TikTok watermarked clip</li>
+          <li>Add text captions to every shot (50% watch on mute)</li>
+          <li>Reply to every comment in the first hour</li>
+          <li>DM the Reel to loyal customers manually</li>
+          <li>Use location tag: Magarpatta City</li>
+          <li>Make the last frame loop-able</li>
+          <li>Enable Remix / Collab features</li>
+        </ul>
+      </div>
+      <div class="dont-box">
+        <h4>❌ DON'T</h4>
+        <ul>
+          <li>Upload from TikTok or with any watermarks</li>
+          <li>Put hashtags in the caption body</li>
+          <li>Post then go offline — stay active the first hour</li>
+          <li>Use more than 15 hashtags (looks spammy in 2026)</li>
+          <li>Make it longer than 45 seconds for this format</li>
+          <li>Use a blurry thumbnail — use the dressing pour frame</li>
+          <li>Ignore the first 10 comments</li>
+          <li>Repost without original hook in first 1.5 seconds</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOST OPTION -->
+  <section>
+    <div class="section-label">Optional Paid Boost</div>
+    <h2>If You Want to Boost (Optional ₹500–₹1000)</h2>
+    <p>If the Reel gets good organic traction in the first 2 hours (100+ views, 20+ likes), consider a small paid boost targeting Pune IT professionals:</p>
+
+    <div class="boost-grid">
+      <div class="boost-card">
+        <div class="boost-icon">🎯</div>
+        <h4>Target Audience</h4>
+        <p>Age 22–35 · Pune city · Interests: Tech, Startup, IT, Healthy Food · Job Title: Software Engineer, Developer, Manager</p>
+      </div>
+      <div class="boost-card">
+        <div class="boost-icon">💰</div>
+        <h4>Budget</h4>
+        <p>₹500/day = 12,000–25,000 reach in Pune. Run for 2 days. Total: ₹1,000 for massive Pune IT exposure.</p>
+      </div>
+      <div class="boost-card">
+        <div class="boost-icon">📍</div>
+        <h4>Location Pin</h4>
+        <p>Set radius to 5km around EON IT Park (Kharadi), Magarpatta City, and Amanora Park Town specifically.</p>
+      </div>
+      <div class="boost-card">
+        <div class="boost-icon">🔗</div>
+        <h4>CTA Button</h4>
+        <p>Set as "Send Message" (WhatsApp/DM) not "Learn More." DM intent = higher conversion for local food orders.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRACKING -->
+  <section>
+    <div class="section-label">Performance Tracking</div>
+    <h2>How to Know If It's Working</h2>
+    <p>Check Instagram Insights 24 hours after posting. Here are the benchmarks for a small Indian food brand account:</p>
+
+    <div class="algo-grid">
+      <div class="algo-card">
+        <div class="rank" style="color: var(--muted); font-size: 22px;">📊</div>
+        <h3>Watch-Through Rate</h3>
+        <p>Above 40% = good. Above 60% = excellent. If below 40%, your hook needs work.</p>
+      </div>
+      <div class="algo-card">
+        <div class="rank" style="color: var(--muted); font-size: 22px;">📤</div>
+        <h3>Shares (Sends)</h3>
+        <p>Even 10–15 DM shares from a small account can trigger the algorithm to push to Explore.</p>
+      </div>
+      <div class="algo-card">
+        <div class="rank" style="color: var(--muted); font-size: 22px;">💾</div>
+        <h3>Saves</h3>
+        <p>A save rate of 2%+ of views is strong. Saves signal "reference content" — the algorithm rewards this.</p>
+      </div>
+    </div>
+
+    <div class="note-box" style="margin-top: 24px;">
+      <p><strong>🔁 If it performs well:</strong> Pin this Reel to your profile. Repost it to Stories every 3 days for a week. Use it as the creative for your paid boost. Its strong performance will also improve distribution of your NEXT post — the algorithm rewards consistent winners.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>Built for <strong>@saladbytepune</strong> · Powered by 2026 Instagram Algorithm Research · <strong>Deploy. Dominate. Repeat.</strong> 🚀</p>
+</footer>
+
+<script>
+  function copyCaption() {
+    const text = document.getElementById('captionText').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.copy-badge');
+      btn.textContent = 'COPIED ✓';
+      btn.style.background = 'rgba(82,183,136,0.5)';
+      setTimeout(() => {
+        btn.textContent = 'COPY';
+        btn.style.background = '';
+      }, 2000);
+    });
+  }
+
+  // Checkbox toggle
+  document.querySelectorAll('.check-box').forEach(box => {
+    box.addEventListener('click', () => box.classList.toggle('done'));
+  });
+
+  // Fade in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.animation = 'fadeUp 0.5s ease forwards';
+        e.target.style.opacity = '0';
+        e.target.style.transform = 'translateY(16px)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('section').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
