@@ -1,0 +1,2304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transaction Dashboard · Akshay Maheshwari</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+:root {
+  --bg:#0a0a0f; --surface:#12121a; --surface2:#1a1a26;
+  --border:#2a2a3a; --accent:#6c63ff; --accent2:#ff6584;
+  --accent3:#43e97b; --accent4:#f7971e; --text:#e8e8f0;
+  --muted:#7070a0; --credit:#43e97b; --debit:#ff6584;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;padding:32px 24px;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* Header */
+.hdr{margin-bottom:48px;position:relative;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.hdr-eye{font-size:11px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+.hdr h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;line-height:1.05;
+  background:linear-gradient(135deg,#fff 0%,var(--accent) 55%,var(--accent2) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-meta{margin-top:10px;color:var(--muted);font-size:12px;display:flex;gap:24px;flex-wrap:wrap}
+.hdr-meta span{display:flex;align-items:center;gap:6px}
+
+/* Grids */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:20px}
+@media(max-width:1000px){.g4{grid-template-columns:1fr 1fr}.g21,.g12{grid-template-columns:1fr}}
+@media(max-width:600px){.g4,.g3,.g2{grid-template-columns:1fr}}
+
+/* Section title */
+.sec{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:36px 0 16px;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* KPI card */
+.kcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;
+  position:relative;overflow:hidden;transition:border-color .2s,transform .2s;animation:fadeUp .5s ease both}
+.kcard:hover{border-color:var(--accent);transform:translateY(-2px)}
+.kcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .2s}
+.kcard:hover::before{opacity:1}
+.kcard-ico{position:absolute;top:18px;right:18px;font-size:26px;opacity:.15}
+.kcard-lbl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.kcard-val{font-family:'Syne',sans-serif;font-size:clamp(18px,2.5vw,26px);font-weight:700;color:#fff;line-height:1.1}
+.kcard-sub{font-size:11px;color:var(--muted);margin-top:5px}
+.kv-green .kcard-val{color:var(--credit)} .kv-red .kcard-val{color:var(--debit)}
+.kv-blue .kcard-val{color:var(--accent)}  .kv-gold .kcard-val{color:var(--accent4)}
+
+/* Chart card */
+.ccard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;animation:fadeUp .5s ease both}
+.ctitle{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:18px}
+
+/* Table card */
+.tcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeUp .5s ease both;margin-bottom:20px}
+.thead2{padding:14px 18px;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:13px;font-weight:600}
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--surface2);color:var(--muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 14px;text-align:right;white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:8px 14px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+td:first-child{text-align:left;color:#fff;font-weight:500}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.pos{color:var(--credit)} .neg{color:var(--debit)} .neu{color:var(--accent)}
+
+/* Category bars */
+.catbar-wrap{display:flex;flex-direction:column;gap:9px}
+.catbar-row{display:flex;align-items:center;gap:10px}
+.catbar-name{font-size:11px;color:var(--text);width:155px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.catbar-bg{flex:1;height:7px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.catbar-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.16,1,.3,1)}
+.catbar-amt{font-size:11px;color:var(--muted);width:85px;text-align:right;flex-shrink:0}
+
+/* DOW grid */
+.dow-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.dow-cell{background:var(--surface2);border-radius:12px;padding:14px 6px;text-align:center;
+  border:1px solid var(--border);transition:transform .15s}
+.dow-cell:hover{transform:scale(1.04)}
+.dow-day{font-size:10px;color:var(--muted);margin-bottom:5px;letter-spacing:.07em}
+.dow-amt{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--debit)}
+.dow-cnt{font-size:10px;color:var(--muted);margin-top:4px}
+
+/* Monthly by year table */
+.mby-year{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--accent);
+  padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
+
+/* Badge */
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600}
+.bg-green{background:rgba(67,233,123,.15);color:var(--credit)}
+.bg-red{background:rgba(255,101,132,.15);color:var(--debit)}
+.bg-blue{background:rgba(108,99,255,.15);color:var(--accent)}
+
+/* Remark tooltip */
+.rmk{max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.kcard:nth-child(1){animation-delay:.05s} .kcard:nth-child(2){animation-delay:.1s}
+.kcard:nth-child(3){animation-delay:.15s} .kcard:nth-child(4){animation-delay:.2s}
+
+/* Footer */
+.footer{margin-top:56px;text-align:center;font-size:11px;color:var(--muted);
+  border-top:1px solid var(--border);padding-top:20px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-eye">Personal Finance · HDFC Bank</div>
+  <h1>Transaction Dashboard</h1>
+  <div class="hdr-meta">
+    <span>📅 <span id="h-dates"></span></span>
+    <span>🗂 <span id="h-txns"></span> transactions</span>
+    <span>📆 <span id="h-years"></span> years</span>
+  </div>
+</div>
+
+<!-- KPI Row 1 -->
+<div class="sec">Overview</div>
+<div class="g4">
+  <div class="kcard kv-red">  <div class="kcard-ico">💸</div><div class="kcard-lbl">Total Withdrawn</div><div class="kcard-val" id="kw"></div><div class="kcard-sub" id="kw2"></div></div>
+  <div class="kcard kv-green"><div class="kcard-ico">💰</div><div class="kcard-lbl">Total Deposited</div><div class="kcard-val" id="kd"></div><div class="kcard-sub" id="kd2"></div></div>
+  <div class="kcard kv-blue"> <div class="kcard-ico">📊</div><div class="kcard-lbl">Net Flow</div>        <div class="kcard-val" id="kn"></div><div class="kcard-sub" id="kn2"></div></div>
+  <div class="kcard kv-gold"> <div class="kcard-ico">📅</div><div class="kcard-lbl">Avg Daily Spend</div><div class="kcard-val" id="kds"></div><div class="kcard-sub" id="kds2"></div></div>
+</div>
+<div class="g4">
+  <div class="kcard"><div class="kcard-ico">🔢</div><div class="kcard-lbl">Transactions</div><div class="kcard-val" id="kt"></div><div class="kcard-sub" id="kt2"></div></div>
+  <div class="kcard"><div class="kcard-ico">📉</div><div class="kcard-lbl">Avg Withdrawal</div><div class="kcard-val" id="kaw"></div><div class="kcard-sub">per debit txn</div></div>
+  <div class="kcard"><div class="kcard-ico">📈</div><div class="kcard-lbl">Avg Deposit</div>   <div class="kcard-val" id="kad"></div><div class="kcard-sub">per credit txn</div></div>
+  <div class="kcard kv-blue"><div class="kcard-ico">🏦</div><div class="kcard-lbl">Avg Balance</div>   <div class="kcard-val" id="kab"></div><div class="kcard-sub" id="kab2"></div></div>
+</div>
+
+<!-- Yearly -->
+<div class="sec">Yearly Trends</div>
+<div class="g21">
+  <div class="ccard"><div class="ctitle">Annual Withdrawal vs Deposit</div><div style="height:270px;position:relative"><canvas id="yearlyBar"></canvas></div></div>
+  <div class="ccard"><div class="ctitle">Net Flow by Year</div><div style="height:270px;position:relative"><canvas id="netflowBar"></canvas></div></div>
+</div>
+<div class="tcard">
+  <div class="thead2">📅 Yearly Summary</div>
+  <div class="tscroll"><table>
+    <thead><tr><th>Year</th><th>Txns</th><th>Debits</th><th>Credits</th><th>Withdrawn (₹)</th><th>Deposited (₹)</th><th>Net Flow (₹)</th><th>Savings %</th><th>Closing Bal (₹)</th></tr></thead>
+    <tbody id="yearlyTbody"></tbody>
+  </table></div>
+</div>
+
+<!-- Monthly -->
+<div class="sec">Monthly Patterns</div>
+<div class="g2">
+  <div class="ccard"><div class="ctitle">Monthly Spend vs Income (all years combined)</div><div style="height:230px;position:relative"><canvas id="monthLine"></canvas></div></div>
+  <div class="ccard"><div class="ctitle">Monthly Volume by Month</div><div style="height:230px;position:relative"><canvas id="monthBar"></canvas></div></div>
+</div>
+
+<!-- Monthly by Year Table -->
+<div class="tcard">
+  <div class="thead2">📆 Monthly Withdrawal &amp; Deposit by Year</div>
+  <div class="tscroll"><table>
+    <thead><tr><th>Year · Month</th><th>Txns</th><th>Withdrawn (₹)</th><th>Deposited (₹)</th><th>Net Flow (₹)</th></tr></thead>
+    <tbody id="mbyTbody"></tbody>
+  </table></div>
+</div>
+
+<!-- Quarterly -->
+<div class="sec">Quarterly Breakdown</div>
+<div class="tcard">
+  <div class="thead2">📊 Quarterly Summary</div>
+  <div class="tscroll"><table>
+    <thead><tr><th>Year · Quarter</th><th>Txns</th><th>Withdrawn (₹)</th><th>Deposited (₹)</th><th>Net Flow (₹)</th></tr></thead>
+    <tbody id="qTbody"></tbody>
+  </table></div>
+</div>
+
+<!-- Day of week -->
+<div class="sec">Day of Week Activity</div>
+<div class="ccard" style="margin-bottom:20px">
+  <div class="ctitle">Spend &amp; Transaction Count by Day</div>
+  <div class="dow-grid" id="dowGrid"></div>
+</div>
+
+<!-- Categories -->
+<div class="sec">Spend Categories</div>
+<div class="g21">
+  <div class="ccard">
+    <div class="ctitle">Category Spend — Total &amp; Share</div>
+    <div class="catbar-wrap" id="catBars"></div>
+  </div>
+  <div class="ccard">
+    <div class="ctitle">Category Distribution</div>
+    <div style="height:320px;position:relative"><canvas id="catDoughnut"></canvas></div>
+  </div>
+</div>
+<div class="tcard">
+  <div class="thead2">🏷 Category Detail</div>
+  <div class="tscroll"><table>
+    <thead><tr><th>Category</th><th>Txns</th><th>Total Spent (₹)</th><th>Avg (₹)</th><th>Max (₹)</th><th>Share %</th></tr></thead>
+    <tbody id="catTbody"></tbody>
+  </table></div>
+</div>
+
+<!-- Top Transactions -->
+<div class="sec">Notable Transactions</div>
+<div class="g2">
+  <div class="tcard">
+    <div class="thead2">🔥 Top 10 Largest Withdrawals</div>
+    <div class="tscroll"><table>
+      <thead><tr><th>Date</th><th>Amount (₹)</th><th>Category</th><th>Remark</th></tr></thead>
+      <tbody id="topD"></tbody>
+    </table></div>
+  </div>
+  <div class="tcard">
+    <div class="thead2">💰 Top 10 Largest Deposits</div>
+    <div class="tscroll"><table>
+      <thead><tr><th>Date</th><th>Amount (₹)</th><th>Category</th><th>Remark</th></tr></thead>
+      <tbody id="topC"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- UPI Merchants -->
+<div class="sec">UPI Merchants</div>
+<div class="g2">
+  <div class="ccard"><div class="ctitle">Top 15 UPI Merchants by Frequency</div><div style="height:340px;position:relative"><canvas id="upiFreq"></canvas></div></div>
+  <div class="ccard"><div class="ctitle">Top 15 UPI Merchants by Spend</div><div style="height:340px;position:relative"><canvas id="upiSpend"></canvas></div></div>
+</div>
+
+<!-- Balance Health -->
+<div class="sec">Balance Health</div>
+<div class="g3">
+  <div class="kcard kv-gold"><div class="kcard-ico">🏆</div><div class="kcard-lbl">Peak Balance</div><div class="kcard-val" id="bmax"></div><div class="kcard-sub">highest recorded</div></div>
+  <div class="kcard kv-blue"><div class="kcard-ico">📊</div><div class="kcard-lbl">Average Balance</div><div class="kcard-val" id="bavg"></div><div class="kcard-sub">mean across all entries</div></div>
+  <div class="kcard kv-red"> <div class="kcard-ico">⚠️</div><div class="kcard-lbl">Min Balance</div>    <div class="kcard-val" id="bmin"></div><div class="kcard-sub" id="blow"></div></div>
+</div>
+
+<div class="footer">
+  Transaction Analysis Dashboard · Generated by Python · HDFC Bank 2016–2026
+</div>
+
+<script>
+const D = {
+  "kpis": {
+    "withdrawn": 21687517.46,
+    "deposited": 21765398.63,
+    "netflow": 77881.17,
+    "savingsRate": 0.36,
+    "avgDailySpend": 5959.75,
+    "avgDailyIncome": 5981.15,
+    "avgW": 4272.56,
+    "avgD": 15252.56,
+    "avgBal": 38795.91,
+    "minBal": 111.42,
+    "maxBal": 567406.48,
+    "totalTxns": 6503,
+    "debitTxns": 5076,
+    "creditTxns": 1427,
+    "dateFrom": "01 Apr 2016",
+    "dateTo": "19 Mar 2026",
+    "totalYears": 10,
+    "lowBalDays": 606
+  },
+  "yearly": [
+    {
+      "year": 2016,
+      "txns": 160,
+      "withdrawn": 567926.74,
+      "deposited": 673424.03,
+      "netflow": 105497.29,
+      "savingsRate": 15.7,
+      "closingBal": 115887.09
+    },
+    {
+      "year": 2017,
+      "txns": 478,
+      "withdrawn": 1208706.17,
+      "deposited": 1116844.46,
+      "netflow": -91861.71,
+      "savingsRate": -8.2,
+      "closingBal": 24025.38
+    },
+    {
+      "year": 2018,
+      "txns": 453,
+      "withdrawn": 2925348.19,
+      "deposited": 2914057.39,
+      "netflow": -11290.8,
+      "savingsRate": -0.4,
+      "closingBal": 12734.58
+    },
+    {
+      "year": 2019,
+      "txns": 446,
+      "withdrawn": 1603118.38,
+      "deposited": 1598064.04,
+      "netflow": -5054.34,
+      "savingsRate": -0.3,
+      "closingBal": 7680.24
+    },
+    {
+      "year": 2020,
+      "txns": 321,
+      "withdrawn": 2087087.42,
+      "deposited": 2099334.85,
+      "netflow": 12247.43,
+      "savingsRate": 0.6,
+      "closingBal": 19927.67
+    },
+    {
+      "year": 2021,
+      "txns": 522,
+      "withdrawn": 1391144.01,
+      "deposited": 1377922.48,
+      "netflow": -13221.53,
+      "savingsRate": -1.0,
+      "closingBal": 6706.14
+    },
+    {
+      "year": 2022,
+      "txns": 1078,
+      "withdrawn": 2382289.75,
+      "deposited": 2385863.93,
+      "netflow": 3574.18,
+      "savingsRate": 0.1,
+      "closingBal": 10280.32
+    },
+    {
+      "year": 2023,
+      "txns": 1036,
+      "withdrawn": 2278043.39,
+      "deposited": 2279895.46,
+      "netflow": 1852.07,
+      "savingsRate": 0.1,
+      "closingBal": 12132.39
+    },
+    {
+      "year": 2024,
+      "txns": 912,
+      "withdrawn": 2602221.79,
+      "deposited": 2603560.03,
+      "netflow": 1338.24,
+      "savingsRate": 0.1,
+      "closingBal": 13470.63
+    },
+    {
+      "year": 2025,
+      "txns": 1097,
+      "withdrawn": 4641631.62,
+      "deposited": 4716431.96,
+      "netflow": 74800.34,
+      "savingsRate": 1.6,
+      "closingBal": 88270.97
+    }
+  ],
+  "monthly": [
+    {
+      "month": "Jan",
+      "txns": 528,
+      "withdrawn": 2242151.74,
+      "deposited": 2170317.74
+    },
+    {
+      "month": "Feb",
+      "txns": 534,
+      "withdrawn": 2437315.9,
+      "deposited": 2716660.98
+    },
+    {
+      "month": "Mar",
+      "txns": 550,
+      "withdrawn": 1882907.22,
+      "deposited": 1496115.89
+    },
+    {
+      "month": "Apr",
+      "txns": 482,
+      "withdrawn": 1943927.16,
+      "deposited": 2452370.66
+    },
+    {
+      "month": "May",
+      "txns": 574,
+      "withdrawn": 1826208.3,
+      "deposited": 1496901.95
+    },
+    {
+      "month": "Jun",
+      "txns": 536,
+      "withdrawn": 1560611.05,
+      "deposited": 1518255.98
+    },
+    {
+      "month": "Jul",
+      "txns": 532,
+      "withdrawn": 1709043.6,
+      "deposited": 1890865.85
+    },
+    {
+      "month": "Aug",
+      "txns": 561,
+      "withdrawn": 1526173.7,
+      "deposited": 1516572.88
+    },
+    {
+      "month": "Sep",
+      "txns": 573,
+      "withdrawn": 1728893.52,
+      "deposited": 1568420.41
+    },
+    {
+      "month": "Oct",
+      "txns": 642,
+      "withdrawn": 1473530.14,
+      "deposited": 1468466.04
+    },
+    {
+      "month": "Nov",
+      "txns": 508,
+      "withdrawn": 1079265.74,
+      "deposited": 1253574.46
+    },
+    {
+      "month": "Dec",
+      "txns": 483,
+      "withdrawn": 2277489.39,
+      "deposited": 2216875.79
+    }
+  ],
+  "monthlyYearly": [
+    {
+      "year": 2016,
+      "month": "Jan",
+      "txns": 20,
+      "withdrawn": 66948.5,
+      "deposited": 84591.0,
+      "netflow": 17642.5
+    },
+    {
+      "year": 2016,
+      "month": "Feb",
+      "txns": 24,
+      "withdrawn": 69032.1,
+      "deposited": 92750.0,
+      "netflow": 23717.9
+    },
+    {
+      "year": 2016,
+      "month": "Mar",
+      "txns": 28,
+      "withdrawn": 177680.49,
+      "deposited": 87018.0,
+      "netflow": -90662.49
+    },
+    {
+      "year": 2016,
+      "month": "Apr",
+      "txns": 3,
+      "withdrawn": 2258.25,
+      "deposited": 10000.0,
+      "netflow": 7741.75
+    },
+    {
+      "year": 2016,
+      "month": "May",
+      "txns": 15,
+      "withdrawn": 5615.36,
+      "deposited": 1281.17,
+      "netflow": -4334.19
+    },
+    {
+      "year": 2016,
+      "month": "Jun",
+      "txns": 9,
+      "withdrawn": 27592.55,
+      "deposited": 15202.36,
+      "netflow": -12390.19
+    },
+    {
+      "year": 2016,
+      "month": "Jul",
+      "txns": 5,
+      "withdrawn": 10409.5,
+      "deposited": 12000.0,
+      "netflow": 1590.5
+    },
+    {
+      "year": 2016,
+      "month": "Aug",
+      "txns": 6,
+      "withdrawn": 9189.5,
+      "deposited": 10225.0,
+      "netflow": 1035.5
+    },
+    {
+      "year": 2016,
+      "month": "Sep",
+      "txns": 6,
+      "withdrawn": 454.28,
+      "deposited": 105114.0,
+      "netflow": 104659.72
+    },
+    {
+      "year": 2016,
+      "month": "Oct",
+      "txns": 5,
+      "withdrawn": 17000.0,
+      "deposited": 70660.0,
+      "netflow": 53660.0
+    },
+    {
+      "year": 2016,
+      "month": "Nov",
+      "txns": 15,
+      "withdrawn": 140087.0,
+      "deposited": 70167.5,
+      "netflow": -69919.5
+    },
+    {
+      "year": 2016,
+      "month": "Dec",
+      "txns": 24,
+      "withdrawn": 41659.21,
+      "deposited": 114415.0,
+      "netflow": 72755.79
+    },
+    {
+      "year": 2017,
+      "month": "Jan",
+      "txns": 22,
+      "withdrawn": 68537.05,
+      "deposited": 127713.0,
+      "netflow": 59175.95
+    },
+    {
+      "year": 2017,
+      "month": "Feb",
+      "txns": 44,
+      "withdrawn": 232920.99,
+      "deposited": 170715.35,
+      "netflow": -62205.64
+    },
+    {
+      "year": 2017,
+      "month": "Mar",
+      "txns": 18,
+      "withdrawn": 60406.79,
+      "deposited": 70787.0,
+      "netflow": 10380.21
+    },
+    {
+      "year": 2017,
+      "month": "Apr",
+      "txns": 33,
+      "withdrawn": 68955.15,
+      "deposited": 79711.22,
+      "netflow": 10756.07
+    },
+    {
+      "year": 2017,
+      "month": "May",
+      "txns": 25,
+      "withdrawn": 45540.25,
+      "deposited": 67792.29,
+      "netflow": 22252.04
+    },
+    {
+      "year": 2017,
+      "month": "Jun",
+      "txns": 21,
+      "withdrawn": 26476.93,
+      "deposited": 107420.0,
+      "netflow": 80943.07
+    },
+    {
+      "year": 2017,
+      "month": "Jul",
+      "txns": 29,
+      "withdrawn": 109200.24,
+      "deposited": 87947.75,
+      "netflow": -21252.49
+    },
+    {
+      "year": 2017,
+      "month": "Aug",
+      "txns": 46,
+      "withdrawn": 83896.73,
+      "deposited": 80643.5,
+      "netflow": -3253.23
+    },
+    {
+      "year": 2017,
+      "month": "Sep",
+      "txns": 71,
+      "withdrawn": 131170.06,
+      "deposited": 103806.35,
+      "netflow": -27363.71
+    },
+    {
+      "year": 2017,
+      "month": "Oct",
+      "txns": 80,
+      "withdrawn": 116525.56,
+      "deposited": 20514.0,
+      "netflow": -96011.56
+    },
+    {
+      "year": 2017,
+      "month": "Nov",
+      "txns": 55,
+      "withdrawn": 146793.02,
+      "deposited": 101913.0,
+      "netflow": -44880.02
+    },
+    {
+      "year": 2017,
+      "month": "Dec",
+      "txns": 34,
+      "withdrawn": 118283.4,
+      "deposited": 97881.0,
+      "netflow": -20402.4
+    },
+    {
+      "year": 2018,
+      "month": "Jan",
+      "txns": 28,
+      "withdrawn": 333141.3,
+      "deposited": 339648.0,
+      "netflow": 6506.7
+    },
+    {
+      "year": 2018,
+      "month": "Feb",
+      "txns": 25,
+      "withdrawn": 41779.88,
+      "deposited": 93158.0,
+      "netflow": 51378.12
+    },
+    {
+      "year": 2018,
+      "month": "Mar",
+      "txns": 42,
+      "withdrawn": 116878.58,
+      "deposited": 66914.25,
+      "netflow": -49964.33
+    },
+    {
+      "year": 2018,
+      "month": "Apr",
+      "txns": 48,
+      "withdrawn": 561768.39,
+      "deposited": 1048444.54,
+      "netflow": 486676.15
+    },
+    {
+      "year": 2018,
+      "month": "May",
+      "txns": 45,
+      "withdrawn": 943948.97,
+      "deposited": 463928.85,
+      "netflow": -480020.12
+    },
+    {
+      "year": 2018,
+      "month": "Jun",
+      "txns": 45,
+      "withdrawn": 91991.87,
+      "deposited": 78730.0,
+      "netflow": -13261.87
+    },
+    {
+      "year": 2018,
+      "month": "Jul",
+      "txns": 32,
+      "withdrawn": 135371.99,
+      "deposited": 119569.87,
+      "netflow": -15802.12
+    },
+    {
+      "year": 2018,
+      "month": "Aug",
+      "txns": 42,
+      "withdrawn": 134355.0,
+      "deposited": 183973.0,
+      "netflow": 49618.0
+    },
+    {
+      "year": 2018,
+      "month": "Sep",
+      "txns": 53,
+      "withdrawn": 360868.68,
+      "deposited": 316341.0,
+      "netflow": -44527.68
+    },
+    {
+      "year": 2018,
+      "month": "Oct",
+      "txns": 44,
+      "withdrawn": 98493.7,
+      "deposited": 105531.2,
+      "netflow": 7037.5
+    },
+    {
+      "year": 2018,
+      "month": "Nov",
+      "txns": 21,
+      "withdrawn": 44984.58,
+      "deposited": 45593.68,
+      "netflow": 609.1
+    },
+    {
+      "year": 2018,
+      "month": "Dec",
+      "txns": 28,
+      "withdrawn": 61765.25,
+      "deposited": 52225.0,
+      "netflow": -9540.25
+    },
+    {
+      "year": 2019,
+      "month": "Jan",
+      "txns": 45,
+      "withdrawn": 201721.0,
+      "deposited": 192035.0,
+      "netflow": -9686.0
+    },
+    {
+      "year": 2019,
+      "month": "Feb",
+      "txns": 44,
+      "withdrawn": 97627.28,
+      "deposited": 89184.48,
+      "netflow": -8442.8
+    },
+    {
+      "year": 2019,
+      "month": "Mar",
+      "txns": 44,
+      "withdrawn": 99097.0,
+      "deposited": 98971.0,
+      "netflow": -126.0
+    },
+    {
+      "year": 2019,
+      "month": "Apr",
+      "txns": 32,
+      "withdrawn": 85718.16,
+      "deposited": 86376.94,
+      "netflow": 658.78
+    },
+    {
+      "year": 2019,
+      "month": "May",
+      "txns": 37,
+      "withdrawn": 69402.93,
+      "deposited": 68311.82,
+      "netflow": -1091.11
+    },
+    {
+      "year": 2019,
+      "month": "Jun",
+      "txns": 39,
+      "withdrawn": 172003.41,
+      "deposited": 168003.0,
+      "netflow": -4000.41
+    },
+    {
+      "year": 2019,
+      "month": "Jul",
+      "txns": 34,
+      "withdrawn": 368728.0,
+      "deposited": 371144.0,
+      "netflow": 2416.0
+    },
+    {
+      "year": 2019,
+      "month": "Aug",
+      "txns": 33,
+      "withdrawn": 106182.97,
+      "deposited": 101700.0,
+      "netflow": -4482.97
+    },
+    {
+      "year": 2019,
+      "month": "Sep",
+      "txns": 29,
+      "withdrawn": 71437.96,
+      "deposited": 69448.1,
+      "netflow": -1989.86
+    },
+    {
+      "year": 2019,
+      "month": "Oct",
+      "txns": 41,
+      "withdrawn": 156095.79,
+      "deposited": 158702.7,
+      "netflow": 2606.91
+    },
+    {
+      "year": 2019,
+      "month": "Nov",
+      "txns": 30,
+      "withdrawn": 70338.17,
+      "deposited": 68703.0,
+      "netflow": -1635.17
+    },
+    {
+      "year": 2019,
+      "month": "Dec",
+      "txns": 38,
+      "withdrawn": 104765.71,
+      "deposited": 125484.0,
+      "netflow": 20718.29
+    },
+    {
+      "year": 2020,
+      "month": "Jan",
+      "txns": 30,
+      "withdrawn": 130000.95,
+      "deposited": 88399.05,
+      "netflow": -41601.9
+    },
+    {
+      "year": 2020,
+      "month": "Feb",
+      "txns": 31,
+      "withdrawn": 645938.94,
+      "deposited": 691783.0,
+      "netflow": 45844.06
+    },
+    {
+      "year": 2020,
+      "month": "Mar",
+      "txns": 21,
+      "withdrawn": 353663.72,
+      "deposited": 245858.0,
+      "netflow": -107805.72
+    },
+    {
+      "year": 2020,
+      "month": "Apr",
+      "txns": 21,
+      "withdrawn": 55351.82,
+      "deposited": 60544.0,
+      "netflow": 5192.18
+    },
+    {
+      "year": 2020,
+      "month": "May",
+      "txns": 43,
+      "withdrawn": 55975.0,
+      "deposited": 62041.0,
+      "netflow": 6066.0
+    },
+    {
+      "year": 2020,
+      "month": "Jun",
+      "txns": 35,
+      "withdrawn": 323895.82,
+      "deposited": 330643.0,
+      "netflow": 6747.18
+    },
+    {
+      "year": 2020,
+      "month": "Jul",
+      "txns": 27,
+      "withdrawn": 115545.0,
+      "deposited": 151131.0,
+      "netflow": 35586.0
+    },
+    {
+      "year": 2020,
+      "month": "Aug",
+      "txns": 31,
+      "withdrawn": 133180.0,
+      "deposited": 99633.0,
+      "netflow": -33547.0
+    },
+    {
+      "year": 2020,
+      "month": "Sep",
+      "txns": 17,
+      "withdrawn": 62580.65,
+      "deposited": 47417.0,
+      "netflow": -15163.65
+    },
+    {
+      "year": 2020,
+      "month": "Oct",
+      "txns": 21,
+      "withdrawn": 89193.92,
+      "deposited": 88846.0,
+      "netflow": -347.92
+    },
+    {
+      "year": 2020,
+      "month": "Nov",
+      "txns": 20,
+      "withdrawn": 34981.8,
+      "deposited": 83298.0,
+      "netflow": 48316.2
+    },
+    {
+      "year": 2020,
+      "month": "Dec",
+      "txns": 24,
+      "withdrawn": 86779.8,
+      "deposited": 149741.8,
+      "netflow": 62962.0
+    },
+    {
+      "year": 2021,
+      "month": "Jan",
+      "txns": 42,
+      "withdrawn": 90633.2,
+      "deposited": 79211.95,
+      "netflow": -11421.25
+    },
+    {
+      "year": 2021,
+      "month": "Feb",
+      "txns": 55,
+      "withdrawn": 134436.35,
+      "deposited": 138829.0,
+      "netflow": 4392.65
+    },
+    {
+      "year": 2021,
+      "month": "Mar",
+      "txns": 77,
+      "withdrawn": 276502.23,
+      "deposited": 274069.84,
+      "netflow": -2432.39
+    },
+    {
+      "year": 2021,
+      "month": "Apr",
+      "txns": 15,
+      "withdrawn": 106710.85,
+      "deposited": 95220.0,
+      "netflow": -11490.85
+    },
+    {
+      "year": 2021,
+      "month": "May",
+      "txns": 8,
+      "withdrawn": 42271.0,
+      "deposited": 45214.0,
+      "netflow": 2943.0
+    },
+    {
+      "year": 2021,
+      "month": "Jun",
+      "txns": 20,
+      "withdrawn": 65986.2,
+      "deposited": 71950.6,
+      "netflow": 5964.4
+    },
+    {
+      "year": 2021,
+      "month": "Jul",
+      "txns": 54,
+      "withdrawn": 74604.4,
+      "deposited": 75047.74,
+      "netflow": 443.34
+    },
+    {
+      "year": 2021,
+      "month": "Aug",
+      "txns": 52,
+      "withdrawn": 156153.7,
+      "deposited": 155267.0,
+      "netflow": -886.7
+    },
+    {
+      "year": 2021,
+      "month": "Sep",
+      "txns": 61,
+      "withdrawn": 162728.75,
+      "deposited": 149592.0,
+      "netflow": -13136.75
+    },
+    {
+      "year": 2021,
+      "month": "Oct",
+      "txns": 61,
+      "withdrawn": 122746.28,
+      "deposited": 127323.75,
+      "netflow": 4577.47
+    },
+    {
+      "year": 2021,
+      "month": "Nov",
+      "txns": 35,
+      "withdrawn": 65304.9,
+      "deposited": 118503.0,
+      "netflow": 53198.1
+    },
+    {
+      "year": 2021,
+      "month": "Dec",
+      "txns": 42,
+      "withdrawn": 93066.15,
+      "deposited": 47693.6,
+      "netflow": -45372.55
+    },
+    {
+      "year": 2022,
+      "month": "Jan",
+      "txns": 97,
+      "withdrawn": 171402.17,
+      "deposited": 159422.0,
+      "netflow": -11980.17
+    },
+    {
+      "year": 2022,
+      "month": "Feb",
+      "txns": 111,
+      "withdrawn": 310794.32,
+      "deposited": 535269.15,
+      "netflow": 224474.83
+    },
+    {
+      "year": 2022,
+      "month": "Mar",
+      "txns": 97,
+      "withdrawn": 432958.54,
+      "deposited": 215662.0,
+      "netflow": -217296.54
+    },
+    {
+      "year": 2022,
+      "month": "Apr",
+      "txns": 102,
+      "withdrawn": 195662.34,
+      "deposited": 212456.6,
+      "netflow": 16794.26
+    },
+    {
+      "year": 2022,
+      "month": "May",
+      "txns": 91,
+      "withdrawn": 188959.14,
+      "deposited": 287686.0,
+      "netflow": 98726.86
+    },
+    {
+      "year": 2022,
+      "month": "Jun",
+      "txns": 107,
+      "withdrawn": 234904.16,
+      "deposited": 134214.0,
+      "netflow": -100690.16
+    },
+    {
+      "year": 2022,
+      "month": "Jul",
+      "txns": 76,
+      "withdrawn": 142216.52,
+      "deposited": 162068.0,
+      "netflow": 19851.48
+    },
+    {
+      "year": 2022,
+      "month": "Aug",
+      "txns": 72,
+      "withdrawn": 270942.37,
+      "deposited": 266796.0,
+      "netflow": -4146.37
+    },
+    {
+      "year": 2022,
+      "month": "Sep",
+      "txns": 76,
+      "withdrawn": 91007.84,
+      "deposited": 70289.6,
+      "netflow": -20718.24
+    },
+    {
+      "year": 2022,
+      "month": "Oct",
+      "txns": 98,
+      "withdrawn": 125306.13,
+      "deposited": 119337.03,
+      "netflow": -5969.1
+    },
+    {
+      "year": 2022,
+      "month": "Nov",
+      "txns": 78,
+      "withdrawn": 116666.0,
+      "deposited": 122822.6,
+      "netflow": 6156.6
+    },
+    {
+      "year": 2022,
+      "month": "Dec",
+      "txns": 73,
+      "withdrawn": 101470.22,
+      "deposited": 99840.95,
+      "netflow": -1629.27
+    },
+    {
+      "year": 2023,
+      "month": "Jan",
+      "txns": 69,
+      "withdrawn": 210102.19,
+      "deposited": 209143.0,
+      "netflow": -959.19
+    },
+    {
+      "year": 2023,
+      "month": "Feb",
+      "txns": 71,
+      "withdrawn": 141130.69,
+      "deposited": 144161.28,
+      "netflow": 3030.59
+    },
+    {
+      "year": 2023,
+      "month": "Mar",
+      "txns": 80,
+      "withdrawn": 146125.24,
+      "deposited": 144346.0,
+      "netflow": -1779.24
+    },
+    {
+      "year": 2023,
+      "month": "Apr",
+      "txns": 96,
+      "withdrawn": 166134.75,
+      "deposited": 164597.0,
+      "netflow": -1537.75
+    },
+    {
+      "year": 2023,
+      "month": "May",
+      "txns": 111,
+      "withdrawn": 191031.99,
+      "deposited": 204776.4,
+      "netflow": 13744.41
+    },
+    {
+      "year": 2023,
+      "month": "Jun",
+      "txns": 87,
+      "withdrawn": 151543.4,
+      "deposited": 158796.0,
+      "netflow": 7252.6
+    },
+    {
+      "year": 2023,
+      "month": "Jul",
+      "txns": 99,
+      "withdrawn": 225667.71,
+      "deposited": 207090.31,
+      "netflow": -18577.4
+    },
+    {
+      "year": 2023,
+      "month": "Aug",
+      "txns": 82,
+      "withdrawn": 114087.08,
+      "deposited": 121790.28,
+      "netflow": 7703.2
+    },
+    {
+      "year": 2023,
+      "month": "Sep",
+      "txns": 89,
+      "withdrawn": 298800.54,
+      "deposited": 306167.0,
+      "netflow": 7366.46
+    },
+    {
+      "year": 2023,
+      "month": "Oct",
+      "txns": 100,
+      "withdrawn": 169857.72,
+      "deposited": 199628.81,
+      "netflow": 29771.09
+    },
+    {
+      "year": 2023,
+      "month": "Nov",
+      "txns": 89,
+      "withdrawn": 178925.71,
+      "deposited": 148546.38,
+      "netflow": -30379.33
+    },
+    {
+      "year": 2023,
+      "month": "Dec",
+      "txns": 63,
+      "withdrawn": 284636.37,
+      "deposited": 270853.0,
+      "netflow": -13783.37
+    },
+    {
+      "year": 2024,
+      "month": "Jan",
+      "txns": 81,
+      "withdrawn": 223193.34,
+      "deposited": 219202.02,
+      "netflow": -3991.32
+    },
+    {
+      "year": 2024,
+      "month": "Feb",
+      "txns": 49,
+      "withdrawn": 254243.33,
+      "deposited": 242530.0,
+      "netflow": -11713.33
+    },
+    {
+      "year": 2024,
+      "month": "Mar",
+      "txns": 72,
+      "withdrawn": 73140.18,
+      "deposited": 75424.8,
+      "netflow": 2284.62
+    },
+    {
+      "year": 2024,
+      "month": "Apr",
+      "txns": 57,
+      "withdrawn": 102789.0,
+      "deposited": 97960.0,
+      "netflow": -4829.0
+    },
+    {
+      "year": 2024,
+      "month": "May",
+      "txns": 91,
+      "withdrawn": 109291.33,
+      "deposited": 117000.0,
+      "netflow": 7708.67
+    },
+    {
+      "year": 2024,
+      "month": "Jun",
+      "txns": 77,
+      "withdrawn": 365843.26,
+      "deposited": 363349.95,
+      "netflow": -2493.31
+    },
+    {
+      "year": 2024,
+      "month": "Jul",
+      "txns": 78,
+      "withdrawn": 302996.57,
+      "deposited": 478071.68,
+      "netflow": 175075.11
+    },
+    {
+      "year": 2024,
+      "month": "Aug",
+      "txns": 83,
+      "withdrawn": 245286.14,
+      "deposited": 215828.66,
+      "netflow": -29457.48
+    },
+    {
+      "year": 2024,
+      "month": "Sep",
+      "txns": 102,
+      "withdrawn": 285499.66,
+      "deposited": 138436.0,
+      "netflow": -147063.66
+    },
+    {
+      "year": 2024,
+      "month": "Oct",
+      "txns": 71,
+      "withdrawn": 281487.58,
+      "deposited": 285310.0,
+      "netflow": 3822.42
+    },
+    {
+      "year": 2024,
+      "month": "Nov",
+      "txns": 84,
+      "withdrawn": 153293.01,
+      "deposited": 152318.61,
+      "netflow": -974.4
+    },
+    {
+      "year": 2024,
+      "month": "Dec",
+      "txns": 67,
+      "withdrawn": 205158.39,
+      "deposited": 218128.31,
+      "netflow": 12969.92
+    },
+    {
+      "year": 2025,
+      "month": "Jan",
+      "txns": 94,
+      "withdrawn": 746472.04,
+      "deposited": 670952.72,
+      "netflow": -75519.32
+    },
+    {
+      "year": 2025,
+      "month": "Feb",
+      "txns": 80,
+      "withdrawn": 509412.02,
+      "deposited": 518280.72,
+      "netflow": 8868.7
+    },
+    {
+      "year": 2025,
+      "month": "Mar",
+      "txns": 71,
+      "withdrawn": 146454.45,
+      "deposited": 217065.0,
+      "netflow": 70610.55
+    },
+    {
+      "year": 2025,
+      "month": "Apr",
+      "txns": 75,
+      "withdrawn": 598578.45,
+      "deposited": 597060.36,
+      "netflow": -1518.09
+    },
+    {
+      "year": 2025,
+      "month": "May",
+      "txns": 108,
+      "withdrawn": 174172.33,
+      "deposited": 178870.42,
+      "netflow": 4698.09
+    },
+    {
+      "year": 2025,
+      "month": "Jun",
+      "txns": 96,
+      "withdrawn": 100373.45,
+      "deposited": 89947.07,
+      "netflow": -10426.38
+    },
+    {
+      "year": 2025,
+      "month": "Jul",
+      "txns": 98,
+      "withdrawn": 224303.67,
+      "deposited": 226795.5,
+      "netflow": 2491.83
+    },
+    {
+      "year": 2025,
+      "month": "Aug",
+      "txns": 114,
+      "withdrawn": 272900.21,
+      "deposited": 280716.44,
+      "netflow": 7816.23
+    },
+    {
+      "year": 2025,
+      "month": "Sep",
+      "txns": 69,
+      "withdrawn": 264345.1,
+      "deposited": 261809.36,
+      "netflow": -2535.74
+    },
+    {
+      "year": 2025,
+      "month": "Oct",
+      "txns": 121,
+      "withdrawn": 296823.46,
+      "deposited": 292612.55,
+      "netflow": -4210.91
+    },
+    {
+      "year": 2025,
+      "month": "Nov",
+      "txns": 81,
+      "withdrawn": 127891.55,
+      "deposited": 341708.69,
+      "netflow": 213817.14
+    },
+    {
+      "year": 2025,
+      "month": "Dec",
+      "txns": 90,
+      "withdrawn": 1179904.89,
+      "deposited": 1040613.13,
+      "netflow": -139291.76
+    }
+  ],
+  "quarterly": [
+    {
+      "year": 2016,
+      "quarter": "Q1",
+      "txns": 72,
+      "withdrawn": 313661.09,
+      "deposited": 264359.0,
+      "netflow": -49302.09
+    },
+    {
+      "year": 2016,
+      "quarter": "Q2",
+      "txns": 27,
+      "withdrawn": 35466.16,
+      "deposited": 26483.53,
+      "netflow": -8982.63
+    },
+    {
+      "year": 2016,
+      "quarter": "Q3",
+      "txns": 17,
+      "withdrawn": 20053.28,
+      "deposited": 127339.0,
+      "netflow": 107285.72
+    },
+    {
+      "year": 2016,
+      "quarter": "Q4",
+      "txns": 44,
+      "withdrawn": 198746.21,
+      "deposited": 255242.5,
+      "netflow": 56496.29
+    },
+    {
+      "year": 2017,
+      "quarter": "Q1",
+      "txns": 84,
+      "withdrawn": 361864.83,
+      "deposited": 369215.35,
+      "netflow": 7350.52
+    },
+    {
+      "year": 2017,
+      "quarter": "Q2",
+      "txns": 79,
+      "withdrawn": 140972.33,
+      "deposited": 254923.51,
+      "netflow": 113951.18
+    },
+    {
+      "year": 2017,
+      "quarter": "Q3",
+      "txns": 146,
+      "withdrawn": 324267.03,
+      "deposited": 272397.6,
+      "netflow": -51869.43
+    },
+    {
+      "year": 2017,
+      "quarter": "Q4",
+      "txns": 169,
+      "withdrawn": 381601.98,
+      "deposited": 220308.0,
+      "netflow": -161293.98
+    },
+    {
+      "year": 2018,
+      "quarter": "Q1",
+      "txns": 95,
+      "withdrawn": 491799.76,
+      "deposited": 499720.25,
+      "netflow": 7920.49
+    },
+    {
+      "year": 2018,
+      "quarter": "Q2",
+      "txns": 138,
+      "withdrawn": 1597709.23,
+      "deposited": 1591103.39,
+      "netflow": -6605.84
+    },
+    {
+      "year": 2018,
+      "quarter": "Q3",
+      "txns": 127,
+      "withdrawn": 630595.67,
+      "deposited": 619883.87,
+      "netflow": -10711.8
+    },
+    {
+      "year": 2018,
+      "quarter": "Q4",
+      "txns": 93,
+      "withdrawn": 205243.53,
+      "deposited": 203349.88,
+      "netflow": -1893.65
+    },
+    {
+      "year": 2019,
+      "quarter": "Q1",
+      "txns": 133,
+      "withdrawn": 398445.28,
+      "deposited": 380190.48,
+      "netflow": -18254.8
+    },
+    {
+      "year": 2019,
+      "quarter": "Q2",
+      "txns": 108,
+      "withdrawn": 327124.5,
+      "deposited": 322691.76,
+      "netflow": -4432.74
+    },
+    {
+      "year": 2019,
+      "quarter": "Q3",
+      "txns": 96,
+      "withdrawn": 546348.93,
+      "deposited": 542292.1,
+      "netflow": -4056.83
+    },
+    {
+      "year": 2019,
+      "quarter": "Q4",
+      "txns": 109,
+      "withdrawn": 331199.67,
+      "deposited": 352889.7,
+      "netflow": 21690.03
+    },
+    {
+      "year": 2020,
+      "quarter": "Q1",
+      "txns": 82,
+      "withdrawn": 1129603.61,
+      "deposited": 1026040.05,
+      "netflow": -103563.56
+    },
+    {
+      "year": 2020,
+      "quarter": "Q2",
+      "txns": 99,
+      "withdrawn": 435222.64,
+      "deposited": 453228.0,
+      "netflow": 18005.36
+    },
+    {
+      "year": 2020,
+      "quarter": "Q3",
+      "txns": 75,
+      "withdrawn": 311305.65,
+      "deposited": 298181.0,
+      "netflow": -13124.65
+    },
+    {
+      "year": 2020,
+      "quarter": "Q4",
+      "txns": 65,
+      "withdrawn": 210955.52,
+      "deposited": 321885.8,
+      "netflow": 110930.28
+    },
+    {
+      "year": 2021,
+      "quarter": "Q1",
+      "txns": 174,
+      "withdrawn": 501571.78,
+      "deposited": 492110.79,
+      "netflow": -9460.99
+    },
+    {
+      "year": 2021,
+      "quarter": "Q2",
+      "txns": 43,
+      "withdrawn": 214968.05,
+      "deposited": 212384.6,
+      "netflow": -2583.45
+    },
+    {
+      "year": 2021,
+      "quarter": "Q3",
+      "txns": 167,
+      "withdrawn": 393486.85,
+      "deposited": 379906.74,
+      "netflow": -13580.11
+    },
+    {
+      "year": 2021,
+      "quarter": "Q4",
+      "txns": 138,
+      "withdrawn": 281117.33,
+      "deposited": 293520.35,
+      "netflow": 12403.02
+    },
+    {
+      "year": 2022,
+      "quarter": "Q1",
+      "txns": 305,
+      "withdrawn": 915155.03,
+      "deposited": 910353.15,
+      "netflow": -4801.88
+    },
+    {
+      "year": 2022,
+      "quarter": "Q2",
+      "txns": 300,
+      "withdrawn": 619525.64,
+      "deposited": 634356.6,
+      "netflow": 14830.96
+    },
+    {
+      "year": 2022,
+      "quarter": "Q3",
+      "txns": 224,
+      "withdrawn": 504166.73,
+      "deposited": 499153.6,
+      "netflow": -5013.13
+    },
+    {
+      "year": 2022,
+      "quarter": "Q4",
+      "txns": 249,
+      "withdrawn": 343442.35,
+      "deposited": 342000.58,
+      "netflow": -1441.77
+    },
+    {
+      "year": 2023,
+      "quarter": "Q1",
+      "txns": 220,
+      "withdrawn": 497358.12,
+      "deposited": 497650.28,
+      "netflow": 292.16
+    },
+    {
+      "year": 2023,
+      "quarter": "Q2",
+      "txns": 294,
+      "withdrawn": 508710.14,
+      "deposited": 528169.4,
+      "netflow": 19459.26
+    },
+    {
+      "year": 2023,
+      "quarter": "Q3",
+      "txns": 270,
+      "withdrawn": 638555.33,
+      "deposited": 635047.59,
+      "netflow": -3507.74
+    },
+    {
+      "year": 2023,
+      "quarter": "Q4",
+      "txns": 252,
+      "withdrawn": 633419.8,
+      "deposited": 619028.19,
+      "netflow": -14391.61
+    },
+    {
+      "year": 2024,
+      "quarter": "Q1",
+      "txns": 202,
+      "withdrawn": 550576.85,
+      "deposited": 537156.82,
+      "netflow": -13420.03
+    },
+    {
+      "year": 2024,
+      "quarter": "Q2",
+      "txns": 225,
+      "withdrawn": 577923.59,
+      "deposited": 578309.95,
+      "netflow": 386.36
+    },
+    {
+      "year": 2024,
+      "quarter": "Q3",
+      "txns": 263,
+      "withdrawn": 833782.37,
+      "deposited": 832336.34,
+      "netflow": -1446.03
+    },
+    {
+      "year": 2024,
+      "quarter": "Q4",
+      "txns": 222,
+      "withdrawn": 639938.98,
+      "deposited": 655756.92,
+      "netflow": 15817.94
+    },
+    {
+      "year": 2025,
+      "quarter": "Q1",
+      "txns": 245,
+      "withdrawn": 1402338.51,
+      "deposited": 1406298.44,
+      "netflow": 3959.93
+    },
+    {
+      "year": 2025,
+      "quarter": "Q2",
+      "txns": 279,
+      "withdrawn": 873124.23,
+      "deposited": 865877.85,
+      "netflow": -7246.38
+    },
+    {
+      "year": 2025,
+      "quarter": "Q3",
+      "txns": 281,
+      "withdrawn": 761548.98,
+      "deposited": 769321.3,
+      "netflow": 7772.32
+    },
+    {
+      "year": 2025,
+      "quarter": "Q4",
+      "txns": 292,
+      "withdrawn": 1604619.9,
+      "deposited": 1674934.37,
+      "netflow": 70314.47
+    }
+  ],
+  "dow": [
+    {
+      "day": "Mon",
+      "txns": 840,
+      "withdrawn": 4468635.28,
+      "deposited": 4845987.04
+    },
+    {
+      "day": "Tue",
+      "txns": 841,
+      "withdrawn": 3460448.81,
+      "deposited": 3086769.72
+    },
+    {
+      "day": "Wed",
+      "txns": 903,
+      "withdrawn": 4283393.77,
+      "deposited": 4084220.66
+    },
+    {
+      "day": "Thu",
+      "txns": 887,
+      "withdrawn": 3624258.12,
+      "deposited": 3168827.29
+    },
+    {
+      "day": "Fri",
+      "txns": 954,
+      "withdrawn": 2317618.76,
+      "deposited": 3196159.3
+    },
+    {
+      "day": "Sat",
+      "txns": 1089,
+      "withdrawn": 2041811.3,
+      "deposited": 1702735.21
+    },
+    {
+      "day": "Sun",
+      "txns": 989,
+      "withdrawn": 1491351.42,
+      "deposited": 1680699.41
+    }
+  ],
+  "categories": [
+    {
+      "name": "Bank Transfer",
+      "total": 8167245.69,
+      "count": 183,
+      "avg": 44629.76,
+      "share": 37.7
+    },
+    {
+      "name": "UPI Payment",
+      "total": 4700543.12,
+      "count": 2381,
+      "avg": 1974.19,
+      "share": 21.7
+    },
+    {
+      "name": "EMI / Loan",
+      "total": 3877353.99,
+      "count": 97,
+      "avg": 39972.72,
+      "share": 17.9
+    },
+    {
+      "name": "Bill Payment",
+      "total": 1818235.23,
+      "count": 121,
+      "avg": 15026.74,
+      "share": 8.4
+    },
+    {
+      "name": "Investment / FD",
+      "total": 899513.0,
+      "count": 12,
+      "avg": 74959.42,
+      "share": 4.1
+    },
+    {
+      "name": "Travel - Rail",
+      "total": 528426.15,
+      "count": 349,
+      "avg": 1514.12,
+      "share": 2.4
+    },
+    {
+      "name": "ATM / Cash",
+      "total": 407100.0,
+      "count": 76,
+      "avg": 5356.58,
+      "share": 1.9
+    },
+    {
+      "name": "Recharge / Telecom",
+      "total": 406530.31,
+      "count": 1348,
+      "avg": 301.58,
+      "share": 1.9
+    },
+    {
+      "name": "Other",
+      "total": 356403.76,
+      "count": 23,
+      "avg": 15495.82,
+      "share": 1.6
+    },
+    {
+      "name": "POS / Card Swipe",
+      "total": 165224.76,
+      "count": 118,
+      "avg": 1400.21,
+      "share": 0.8
+    },
+    {
+      "name": "Tax",
+      "total": 132460.0,
+      "count": 5,
+      "avg": 26492.0,
+      "share": 0.6
+    },
+    {
+      "name": "Shopping",
+      "total": 91070.03,
+      "count": 39,
+      "avg": 2335.13,
+      "share": 0.4
+    },
+    {
+      "name": "Food & Dining",
+      "total": 72750.96,
+      "count": 99,
+      "avg": 734.86,
+      "share": 0.3
+    },
+    {
+      "name": "Travel - Local",
+      "total": 49366.32,
+      "count": 215,
+      "avg": 229.61,
+      "share": 0.2
+    },
+    {
+      "name": "Tech / Domain",
+      "total": 15294.14,
+      "count": 10,
+      "avg": 1529.41,
+      "share": 0.1
+    }
+  ],
+  "topDebits": [
+    {
+      "date": "2018-05-28",
+      "amount": 388600.0,
+      "category": "Investment / FD",
+      "remark": "BIL/001460044823/Flat Advance/NSP"
+    },
+    {
+      "date": "2018-05-30",
+      "amount": 340000.0,
+      "category": "Bill Payment",
+      "remark": "BIL/001461218447/Stamp Duty Reg/10579890556"
+    },
+    {
+      "date": "2018-04-05",
+      "amount": 300000.0,
+      "category": "Investment / FD",
+      "remark": "BIL/001426147328/Puja debt/NSP"
+    },
+    {
+      "date": "2021-02-10",
+      "amount": 300000.0,
+      "category": "Bank Transfer",
+      "remark": "BIL/NEFT/000041925814/Aayush SBI/AAYUSH MAH/SBIN0016550"
+    },
+    {
+      "date": "2019-01-09",
+      "amount": 250000.0,
+      "category": "Bank Transfer",
+      "remark": "BIL/NEFT/001616599231/Debt Settle/DIVYAPRAKA/HDFC0000683"
+    },
+    {
+      "date": "2021-02-09",
+      "amount": 200000.0,
+      "category": "Bank Transfer",
+      "remark": "BIL/NEFT/000040686831/AayushSbi/AAYUSH MAH/SBIN0016550"
+    },
+    {
+      "date": "2023-02-28",
+      "amount": 200000.0,
+      "category": "Bank Transfer",
+      "remark": "BIL/NEFT/000612835380/SunilUncleJi/NAKODA KIS/BKID0009116"
+    },
+    {
+      "date": "2023-03-02",
+      "amount": 200000.0,
+      "category": "Bank Transfer",
+      "remark": "BIL/NEFT/000615374652/SunilUncleJi/NAKODA KIS/BKID0009116"
+    },
+    {
+      "date": "2024-06-03",
+      "amount": 200000.0,
+      "category": "Bank Transfer",
+      "remark": "BIL/NEFT/HS92415545811943/Anchal Ashok Un/ANCHAL DAK/HDFC000"
+    },
+    {
+      "date": "2025-04-29",
+      "amount": 200000.0,
+      "category": "Bank Transfer",
+      "remark": "BIL/NEFT/ICICN12025042978145240/Anil Sabakheda/ANIL PATID/CE"
+    }
+  ],
+  "topCredits": [
+    {
+      "date": "2018-04-23",
+      "amount": 500000.0,
+      "category": "Other",
+      "remark": "ATUL SETHI/236424/SBI"
+    },
+    {
+      "date": "2021-02-08",
+      "amount": 500000.0,
+      "category": "Bank Transfer",
+      "remark": "NEFT-CITIN21121883768-AKSHAY MAHESHWARI-ICIC0006028-52387707"
+    },
+    {
+      "date": "2026-02-18",
+      "amount": 430000.0,
+      "category": "Other",
+      "remark": "INF/INFT/043410326461/SAJJANLAL GAJEN"
+    },
+    {
+      "date": "2019-01-09",
+      "amount": 260000.0,
+      "category": "Bank Transfer",
+      "remark": "NEFT-CITIN19904515168-AKSHAY MAHESHWARI-/ ICIC0006028-523877"
+    },
+    {
+      "date": "2018-04-04",
+      "amount": 230000.0,
+      "category": "Bank Transfer",
+      "remark": "NEFT-CITIN18843134466-AKSHAY MAHESHWARI-/ ICIC000 028-523877"
+    },
+    {
+      "date": "2024-08-28",
+      "amount": 205236.0,
+      "category": "Other",
+      "remark": "RTGS-BARBR52024082800915655-KANTA DEVI-87900100015861-BARB0D"
+    },
+    {
+      "date": "2018-05-30",
+      "amount": 200000.0,
+      "category": "Bank Transfer",
+      "remark": "MMT/815012361302/7030248008"
+    },
+    {
+      "date": "2022-05-27",
+      "amount": 200000.0,
+      "category": "Other",
+      "remark": "RTGS-SMNBR22022052700100249-AKSHAY S O MUKESH MAHESHWARI-100"
+    },
+    {
+      "date": "2023-02-27",
+      "amount": 200000.0,
+      "category": "Bank Transfer",
+      "remark": "NEFT-N058232347050751-AKSHAY MAHESHWARI-SELF-50100434874870-"
+    },
+    {
+      "date": "2023-02-28",
+      "amount": 200000.0,
+      "category": "Bank Transfer",
+      "remark": "NEFT-N059232348169330-AKSHAY MAHESHWARI-SELF-50100434874870-"
+    }
+  ],
+  "upiMerchants": [
+    {
+      "name": "indianrailwayca",
+      "count": 48,
+      "total": 89349.6
+    },
+    {
+      "name": "INDIAN RAI",
+      "count": 40,
+      "total": 73585.7
+    },
+    {
+      "name": "aanchalmaheshwa",
+      "count": 23,
+      "total": 366000.0
+    },
+    {
+      "name": "BIKANER MI",
+      "count": 21,
+      "total": 1500.0
+    },
+    {
+      "name": "uberindiasystem",
+      "count": 20,
+      "total": 2746.32
+    },
+    {
+      "name": "paytmqr28100505",
+      "count": 19,
+      "total": 8762.0
+    },
+    {
+      "name": "VIVEKANAND",
+      "count": 19,
+      "total": 3550.0
+    },
+    {
+      "name": "KAILASH CH",
+      "count": 18,
+      "total": 1375.0
+    },
+    {
+      "name": "ISS FACILI",
+      "count": 15,
+      "total": 2325.0
+    },
+    {
+      "name": "q347171648@ybl",
+      "count": 15,
+      "total": 609.0
+    },
+    {
+      "name": "q405989492@ybl",
+      "count": 11,
+      "total": 2010.0
+    },
+    {
+      "name": "paytm-jiomobili",
+      "count": 10,
+      "total": 2490.0
+    },
+    {
+      "name": "SHRIKANT V",
+      "count": 10,
+      "total": 2500.0
+    },
+    {
+      "name": "ANCHAL MAH",
+      "count": 10,
+      "total": 275000.0
+    },
+    {
+      "name": "PRALHAD SH",
+      "count": 10,
+      "total": 393.0
+    }
+  ]
+};
+
+// ── Helpers ──────────────────────────────────────────────────
+const fi = v => '₹' + Number(v).toLocaleString('en-IN', {maximumFractionDigits:0});
+const fl = v => {
+  if(v>=1e7) return '₹'+(v/1e7).toFixed(2)+' Cr';
+  if(v>=1e5) return '₹'+(v/1e5).toFixed(1)+' L';
+  return fi(v);
+};
+const COLORS = ['#6c63ff','#ff6584','#43e97b','#f7971e','#38b2f5',
+                '#f9ca24','#a29bfe','#fd79a8','#00b894','#fdcb6e',
+                '#e17055','#74b9ff','#b2bec3','#55efc4','#d63031'];
+
+Chart.defaults.color = '#7070a0';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 11;
+const grid = { color:'rgba(255,255,255,0.05)', drawBorder:false };
+
+// ── Header ───────────────────────────────────────────────────
+document.getElementById('h-dates').textContent = D.kpis.dateFrom + ' – ' + D.kpis.dateTo;
+document.getElementById('h-txns').textContent  = D.kpis.totalTxns.toLocaleString();
+document.getElementById('h-years').textContent = D.kpis.totalYears;
+
+// ── KPIs ─────────────────────────────────────────────────────
+document.getElementById('kw').textContent   = fl(D.kpis.withdrawn);
+document.getElementById('kw2').textContent  = D.kpis.debitTxns.toLocaleString()+' debit txns';
+document.getElementById('kd').textContent   = fl(D.kpis.deposited);
+document.getElementById('kd2').textContent  = D.kpis.creditTxns.toLocaleString()+' credit txns';
+document.getElementById('kn').textContent   = fl(D.kpis.netflow);
+document.getElementById('kn2').textContent  = D.kpis.savingsRate.toFixed(1)+'% savings rate';
+document.getElementById('kds').textContent  = fi(D.kpis.avgDailySpend);
+document.getElementById('kds2').textContent = 'income: '+fi(D.kpis.avgDailyIncome)+'/day';
+document.getElementById('kt').textContent   = D.kpis.totalTxns.toLocaleString();
+document.getElementById('kt2').textContent  = D.kpis.debitTxns+' debits · '+D.kpis.creditTxns+' credits';
+document.getElementById('kaw').textContent  = fi(D.kpis.avgW);
+document.getElementById('kad').textContent  = fi(D.kpis.avgD);
+document.getElementById('kab').textContent  = fl(D.kpis.avgBal);
+document.getElementById('kab2').textContent = 'min: '+fi(D.kpis.minBal);
+document.getElementById('bmax').textContent = fl(D.kpis.maxBal);
+document.getElementById('bavg').textContent = fl(D.kpis.avgBal);
+document.getElementById('bmin').textContent = fi(D.kpis.minBal);
+document.getElementById('blow').textContent = D.kpis.lowBalDays+' entries below ₹5,000';
+
+// ── Yearly bar ───────────────────────────────────────────────
+new Chart(document.getElementById('yearlyBar'),{
+  type:'bar',
+  data:{ labels:D.yearly.map(d=>d.year),
+    datasets:[
+      {label:'Withdrawn',data:D.yearly.map(d=>d.withdrawn),backgroundColor:'rgba(255,101,132,.7)',borderRadius:6,borderSkipped:false},
+      {label:'Deposited',data:D.yearly.map(d=>d.deposited),backgroundColor:'rgba(67,233,123,.7)',borderRadius:6,borderSkipped:false}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>' '+fl(c.raw)}}},
+    scales:{x:{grid},y:{grid,ticks:{callback:v=>fl(v)}}}
+  }
+});
+
+// ── Net flow bar ─────────────────────────────────────────────
+new Chart(document.getElementById('netflowBar'),{
+  type:'bar',
+  data:{ labels:D.yearly.map(d=>d.year),
+    datasets:[{label:'Net Flow',data:D.yearly.map(d=>d.netflow),
+      backgroundColor:D.yearly.map(d=>d.netflow>=0?'rgba(67,233,123,.75)':'rgba(255,101,132,.75)'),
+      borderRadius:6,borderSkipped:false}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fl(c.raw)}}},
+    scales:{x:{grid},y:{grid,ticks:{callback:v=>fl(v)}}}
+  }
+});
+
+// ── Yearly table ─────────────────────────────────────────────
+const ytb = document.getElementById('yearlyTbody');
+D.yearly.forEach(d=>{
+  ytb.innerHTML += `<tr>
+    <td>${d.year}</td><td>${d.txns.toLocaleString()}</td>
+    <td>${d.debits}</td><td>${d.credits}</td>
+    <td class="neg">${fl(d.withdrawn)}</td>
+    <td class="pos">${fl(d.deposited)}</td>
+    <td class="${d.netflow>=0?'pos':'neg'}">${fl(d.netflow)}</td>
+    <td class="${d.savingsRate>=0?'pos':'neg'}">${d.savingsRate.toFixed(1)}%</td>
+    <td class="neu">${fl(d.closingBal)}</td></tr>`;
+});
+
+// ── Monthly line ─────────────────────────────────────────────
+new Chart(document.getElementById('monthLine'),{
+  type:'line',
+  data:{ labels:D.monthly.map(d=>d.month),
+    datasets:[
+      {label:'Withdrawn',data:D.monthly.map(d=>d.withdrawn),borderColor:'#ff6584',
+        backgroundColor:'rgba(255,101,132,.08)',tension:.4,fill:true,pointRadius:4},
+      {label:'Deposited',data:D.monthly.map(d=>d.deposited),borderColor:'#43e97b',
+        backgroundColor:'rgba(67,233,123,.06)',tension:.4,fill:true,pointRadius:4}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'top'},tooltip:{callbacks:{label:c=>' '+fl(c.raw)}}},
+    scales:{x:{grid},y:{grid,ticks:{callback:v=>fl(v)}}}
+  }
+});
+
+// ── Monthly bar ───────────────────────────────────────────────
+new Chart(document.getElementById('monthBar'),{
+  type:'bar',
+  data:{ labels:D.monthly.map(d=>d.month),
+    datasets:[
+      {label:'Txns',data:D.monthly.map(d=>d.txns),backgroundColor:'rgba(108,99,255,.7)',borderRadius:4,borderSkipped:false}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{grid},y:{grid}}
+  }
+});
+
+// ── Monthly by year table ─────────────────────────────────────
+const mby = document.getElementById('mbyTbody');
+let lastYear = null;
+D.monthlyYearly.forEach(d=>{
+  if(d.year !== lastYear){
+    mby.innerHTML += `<tr><td colspan="5" class="mby-year">${d.year}</td></tr>`;
+    lastYear = d.year;
+  }
+  mby.innerHTML += `<tr>
+    <td style="padding-left:28px">${d.month}</td>
+    <td>${d.txns}</td>
+    <td class="neg">${fi(d.withdrawn)}</td>
+    <td class="pos">${fi(d.deposited)}</td>
+    <td class="${d.netflow>=0?'pos':'neg'}">${fi(d.netflow)}</td></tr>`;
+});
+
+// ── Quarterly table ───────────────────────────────────────────
+const qtb = document.getElementById('qTbody');
+let lastQYear = null;
+D.quarterly.forEach(d=>{
+  if(d.year !== lastQYear){
+    qtb.innerHTML += `<tr><td colspan="5" class="mby-year">${d.year}</td></tr>`;
+    lastQYear = d.year;
+  }
+  qtb.innerHTML += `<tr>
+    <td style="padding-left:28px">${d.quarter}</td>
+    <td>${d.txns}</td>
+    <td class="neg">${fi(d.withdrawn)}</td>
+    <td class="pos">${fi(d.deposited)}</td>
+    <td class="${d.netflow>=0?'pos':'neg'}">${fi(d.netflow)}</td></tr>`;
+});
+
+// ── Day of week ───────────────────────────────────────────────
+const maxDow = Math.max(...D.dow.map(d=>d.withdrawn));
+const dowGrid = document.getElementById('dowGrid');
+D.dow.forEach(d=>{
+  const intensity = maxDow>0 ? d.withdrawn/maxDow : 0;
+  dowGrid.innerHTML += `<div class="dow-cell" style="border-color:rgba(255,101,132,${0.1+intensity*.65})">
+    <div class="dow-day">${d.day.toUpperCase()}</div>
+    <div class="dow-amt">${fl(d.withdrawn)}</div>
+    <div class="dow-cnt">${d.txns} txns</div></div>`;
+});
+
+// ── Category bars ─────────────────────────────────────────────
+const maxCat = Math.max(...D.categories.map(c=>c.total));
+const catBars = document.getElementById('catBars');
+D.categories.forEach((c,i)=>{
+  const pct = maxCat>0 ? c.total/maxCat*100 : 0;
+  catBars.innerHTML += `<div class="catbar-row">
+    <div class="catbar-name" title="${c.name}">${c.name}</div>
+    <div class="catbar-bg"><div class="catbar-fill" style="width:${pct}%;background:${COLORS[i%COLORS.length]}"></div></div>
+    <div class="catbar-amt">${fl(c.total)}</div></div>`;
+});
+
+// ── Category doughnut ─────────────────────────────────────────
+new Chart(document.getElementById('catDoughnut'),{
+  type:'doughnut',
+  data:{ labels:D.categories.map(c=>c.name),
+    datasets:[{data:D.categories.map(c=>c.total),backgroundColor:COLORS,
+      borderColor:'#12121a',borderWidth:2,hoverOffset:6}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'right',labels:{boxWidth:11,padding:9,font:{size:11}}},
+      tooltip:{callbacks:{label:c=>' '+fl(c.raw)+' ('+D.categories[c.dataIndex].share+'%)'}}}
+  }
+});
+
+// ── Category table ────────────────────────────────────────────
+const ctb = document.getElementById('catTbody');
+D.categories.forEach((c,i)=>{
+  ctb.innerHTML += `<tr>
+    <td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${COLORS[i%COLORS.length]};margin-right:7px"></span>${c.name}</td>
+    <td>${c.count}</td>
+    <td class="neg">${fl(c.total)}</td>
+    <td>${fi(c.avg)}</td>
+    <td>${fi(c.max_amt)}</td>
+    <td class="neu">${c.share}%</td></tr>`;
+});
+
+// ── Top debits / credits ──────────────────────────────────────
+const topD = document.getElementById('topD');
+D.topDebits.forEach(d=>{
+  topD.innerHTML += `<tr>
+    <td>${d.date}</td>
+    <td class="neg">${fi(d.amount)}</td>
+    <td><span class="badge bg-red">${d.category}</span></td>
+    <td class="rmk" title="${d.remark}">${d.remark}</td></tr>`;
+});
+
+const topC = document.getElementById('topC');
+D.topCredits.forEach(d=>{
+  topC.innerHTML += `<tr>
+    <td>${d.date}</td>
+    <td class="pos">${fi(d.amount)}</td>
+    <td><span class="badge bg-green">${d.category}</span></td>
+    <td class="rmk" title="${d.remark}">${d.remark}</td></tr>`;
+});
+
+// ── UPI charts ────────────────────────────────────────────────
+new Chart(document.getElementById('upiFreq'),{
+  type:'bar', indexAxis:'y',
+  data:{ labels:D.upiMerchants.map(d=>d.name),
+    datasets:[{label:'Count',data:D.upiMerchants.map(d=>d.count),
+      backgroundColor:COLORS.map(c=>c+'cc'),borderRadius:4,borderSkipped:false}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{grid},y:{grid:{display:false}}}
+  }
+});
+
+new Chart(document.getElementById('upiSpend'),{
+  type:'bar', indexAxis:'y',
+  data:{ labels:D.upiMerchants.map(d=>d.name),
+    datasets:[{label:'Spent',data:D.upiMerchants.map(d=>d.total),
+      backgroundColor:COLORS.map(c=>c+'aa'),borderRadius:4,borderSkipped:false}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+fi(c.raw)}}},
+    scales:{x:{grid,ticks:{callback:v=>fl(v)}},y:{grid:{display:false}}}
+  }
+});
+</script>
+</body>
+</html>
