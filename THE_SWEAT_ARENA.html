@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Salad Byte × The Sweat Arena — Partnership Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:    #090909;
+    --dark:     #111111;
+    --panel:    #181818;
+    --card:     #1e1e1e;
+    --green:    #39D353;
+    --lime:     #8BD450;
+    --gold:     #F5A623;
+    --red:      #E84040;
+    --teal:     #1ECBE1;
+    --orange:   #FF6B2B;
+    --white:    #F5F5F5;
+    --muted:    #888888;
+    --border:   #2a2a2a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.3;
+  }
+
+  section { position: relative; z-index: 1; }
+
+  /* ── CODE LABEL ── */
+  .code-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.7;
+  }
+
+  /* ── TOP NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 56px;
+    background: rgba(9,9,9,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px; font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--green);
+  }
+  .nav-logo span { color: var(--white); }
+  .nav-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 2px;
+  }
+
+  /* ── SLIDE COMMON ── */
+  .slide {
+    min-height: 100vh;
+    padding: 120px 60px 80px;
+    display: flex; flex-direction: column; justify-content: center;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .accent-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  }
+
+  /* ── SLIDE 1: HERO ── */
+  #s1 { background: var(--black); }
+  #s1 .accent-bar { background: var(--green); }
+
+  .side-strip {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+    background: var(--green);
+  }
+
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(64px, 10vw, 120px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+  }
+  .hero-title .brand { color: var(--white); }
+  .hero-title .cross { color: var(--muted); font-size: 0.6em; margin: 0 12px; }
+  .hero-title .partner { color: var(--green); }
+
+  .hero-sub {
+    font-size: 17px; color: var(--muted); font-style: italic;
+    margin: 20px 0 40px;
+    max-width: 560px;
+  }
+
+  .hero-divider {
+    width: 280px; height: 3px;
+    background: linear-gradient(90deg, var(--green), transparent);
+    margin-bottom: 40px;
+  }
+
+  .pills {
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .pill {
+    border: 1px solid var(--border);
+    padding: 14px 24px;
+    min-width: 160px;
+    transition: border-color 0.2s;
+  }
+  .pill:hover { border-color: var(--green); }
+  .pill-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px; font-weight: 800;
+    color: var(--green);
+  }
+  .pill-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--muted); margin-top: 2px;
+  }
+
+  /* ── SLIDE 2: PROBLEM ── */
+  #s2 { background: var(--dark); }
+  #s2 .accent-bar { background: var(--red); }
+
+  .slide-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(42px, 6vw, 72px);
+    font-weight: 900; text-transform: uppercase;
+    line-height: 1; margin-bottom: 10px;
+  }
+  .slide-sub {
+    font-size: 15px; font-style: italic; color: var(--muted);
+    margin-bottom: 36px;
+  }
+
+  .problem-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px; margin-bottom: 24px;
+  }
+  .problem-card {
+    background: var(--panel);
+    padding: 28px 24px;
+    border-left: 4px solid var(--border);
+    transition: transform 0.2s;
+  }
+  .problem-card:hover { transform: translateY(-3px); }
+  .problem-card.red  { border-left-color: var(--red); }
+  .problem-card.gold { border-left-color: var(--gold); }
+  .problem-card.green{ border-left-color: var(--green); }
+
+  .card-icon { font-size: 28px; margin-bottom: 14px; }
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .card-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .alert-bar {
+    background: rgba(232,64,64,0.1);
+    border: 1px solid var(--red);
+    padding: 14px 20px;
+    font-size: 13px; font-weight: 600;
+    color: var(--red); text-align: center;
+  }
+
+  /* ── SLIDE 3: MENU ── */
+  #s3 { background: var(--black); }
+  #s3 .accent-bar { background: var(--green); }
+
+  .menu-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .menu-card {
+    background: var(--panel);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .menu-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(57,211,83,0.15); }
+
+  .menu-day {
+    background: var(--green);
+    padding: 8px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 3px;
+    font-weight: 700; color: #000;
+  }
+  .menu-content { padding: 18px 16px; }
+  .menu-emoji { font-size: 24px; margin-bottom: 8px; }
+  .menu-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px; font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .menu-footer {
+    margin-top: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--muted); text-align: center;
+  }
+
+  /* ── SLIDE 4: ECONOMICS ── */
+  #s4 { background: var(--dark); }
+  #s4 .accent-bar { background: var(--gold); }
+
+  .econ-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 24px; margin-bottom: 24px;
+  }
+  .econ-card {
+    background: var(--panel);
+    padding: 32px 28px;
+    border-top: 4px solid var(--border);
+    transition: transform 0.2s;
+  }
+  .econ-card:hover { transform: translateY(-4px); }
+  .econ-card.red   { border-top-color: var(--red); }
+  .econ-card.green { border-top-color: var(--green); }
+  .econ-card.gold  { border-top-color: var(--gold); }
+
+  .econ-icon { font-size: 24px; margin-bottom: 12px; opacity: 0.8; }
+  .econ-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 52px; font-weight: 900;
+    line-height: 1;
+  }
+  .econ-card.red  .econ-val { color: var(--red); }
+  .econ-card.green .econ-val { color: var(--green); }
+  .econ-card.gold  .econ-val { color: var(--gold); }
+
+  .econ-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--muted); margin: 8px 0;
+  }
+  .econ-desc { font-size: 13px; color: var(--muted); font-style: italic; }
+
+  .projection-bar {
+    background: rgba(57,211,83,0.07);
+    border: 1px solid var(--green);
+    padding: 16px 24px;
+    font-size: 13px; font-weight: 600;
+    color: var(--green); text-align: center;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── SLIDE 5: DEPLOYMENT ── */
+  #s5 { background: var(--black); }
+  #s5 .accent-bar { background: var(--teal); }
+
+  .deploy-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 20px; position: relative;
+  }
+  .deploy-grid::before {
+    content: '';
+    position: absolute; top: 32px; left: 10%; right: 10%; height: 2px;
+    background: linear-gradient(90deg, var(--teal), var(--green), var(--lime), var(--gold));
+    opacity: 0.3;
+  }
+
+  .deploy-card {
+    background: var(--panel);
+    padding: 24px 20px;
+    border: 1px solid var(--border);
+    transition: transform 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .deploy-card:hover { transform: translateY(-4px); border-color: var(--teal); }
+
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .deploy-card:nth-child(1) .step-num { background: var(--teal); color: #000; }
+  .deploy-card:nth-child(2) .step-num { background: var(--green); color: #000; }
+  .deploy-card:nth-child(3) .step-num { background: var(--lime); color: #000; }
+  .deploy-card:nth-child(4) .step-num { background: var(--gold); color: #000; }
+
+  .deploy-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .deploy-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .zero-waste {
+    margin-top: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--teal); text-align: center; font-weight: 700;
+  }
+
+  /* ── SLIDE 6: BETA ── */
+  #s6 { background: var(--dark); }
+  #s6 .accent-bar { background: var(--lime); }
+
+  .beta-grid {
+    display: grid; grid-template-columns: 1.5fr 1fr;
+    gap: 24px; margin-bottom: 24px;
+  }
+  .beta-main {
+    background: rgba(57,211,83,0.05);
+    border: 1px solid var(--green);
+    padding: 32px;
+  }
+  .beta-offer {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px; font-weight: 800;
+    color: var(--green); margin: 16px 0 20px;
+    text-transform: uppercase;
+  }
+  .beta-points { list-style: none; }
+  .beta-points li {
+    padding: 8px 0;
+    font-size: 14px; color: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .beta-points li:last-child { border-bottom: none; }
+  .bp-arrow { color: var(--lime); flex-shrink: 0; font-weight: 700; margin-top: 1px; }
+
+  .beta-side {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 28px;
+  }
+  .beta-side-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--lime); margin-bottom: 20px;
+    font-weight: 700;
+  }
+  .why-point {
+    display: flex; gap: 12px; margin-bottom: 16px;
+    font-size: 13px; color: var(--muted); line-height: 1.5;
+    align-items: flex-start;
+  }
+  .why-bar {
+    flex-shrink: 0; width: 3px; height: 40px;
+    background: var(--lime); margin-top: 2px;
+  }
+
+  .beta-footer {
+    background: rgba(139,212,80,0.07);
+    border: 1px solid var(--lime);
+    padding: 14px 24px;
+    font-size: 13px; font-weight: 600;
+    color: var(--lime); text-align: center;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── SLIDE 7: CTA ── */
+  #s7 {
+    background: var(--black);
+    min-height: 100vh;
+  }
+  #s7 .accent-bar { background: var(--orange); }
+
+  .cta-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(56px, 9vw, 110px);
+    font-weight: 900; text-transform: uppercase;
+    line-height: 0.95; letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+  .cta-title .line1 { color: var(--white); display: block; }
+  .cta-title .line2 { color: var(--orange); display: block; }
+
+  .cta-sub {
+    font-size: 16px; font-style: italic; color: var(--muted);
+    margin-bottom: 40px; max-width: 600px;
+  }
+
+  .cta-divider {
+    width: 320px; height: 3px;
+    background: linear-gradient(90deg, var(--orange), transparent);
+    margin-bottom: 40px;
+  }
+
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; max-width: 620px; margin-bottom: 20px;
+  }
+  .contact-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex; align-items: center; gap: 16px;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .contact-card:hover { transform: translateY(-2px); }
+  .contact-card.green:hover { border-color: var(--green); }
+  .contact-card.orange:hover { border-color: var(--orange); }
+
+  .contact-icon { font-size: 22px; }
+  .contact-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .contact-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px; font-weight: 700; color: var(--white);
+  }
+
+  .website-bar {
+    max-width: 620px;
+    background: rgba(57,211,83,0.07);
+    border: 1px solid var(--green);
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 12px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .website-bar:hover { background: rgba(57,211,83,0.13); }
+  .website-bar span {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px; color: var(--green);
+    font-weight: 700; letter-spacing: 0.5px;
+  }
+
+  .cta-footer {
+    margin-top: 40px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: #333; text-align: left;
+  }
+
+  /* ── SCROLL DOTS ── */
+  .nav-dots {
+    position: fixed; right: 24px; top: 50%; transform: translateY(-50%);
+    z-index: 100; display: flex; flex-direction: column; gap: 8px;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--border); cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dot.active { background: var(--green); transform: scale(1.4); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate { opacity: 0; }
+  .animate.visible { animation: fadeUp 0.6s ease forwards; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .slide { padding: 100px 24px 60px; }
+    .problem-grid, .menu-grid, .econ-grid { grid-template-columns: 1fr 1fr; }
+    .deploy-grid { grid-template-columns: 1fr 1fr; }
+    .beta-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .problem-grid, .menu-grid, .econ-grid, .deploy-grid { grid-template-columns: 1fr; }
+    nav { padding: 0 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">SALAD<span>BYTE</span></div>
+  <div class="nav-badge">// PARTNERSHIP PROTOCOL v2.0</div>
+</nav>
+
+<!-- NAV DOTS -->
+<div class="nav-dots" id="navDots">
+  <div class="dot" onclick="scrollToSlide(0)"></div>
+  <div class="dot" onclick="scrollToSlide(1)"></div>
+  <div class="dot" onclick="scrollToSlide(2)"></div>
+  <div class="dot" onclick="scrollToSlide(3)"></div>
+  <div class="dot" onclick="scrollToSlide(4)"></div>
+  <div class="dot" onclick="scrollToSlide(5)"></div>
+  <div class="dot" onclick="scrollToSlide(6)"></div>
+</div>
+
+<!-- SLIDE 1: HERO -->
+<section class="slide" id="s1">
+  <div class="accent-bar"></div>
+  <div class="side-strip"></div>
+  <div class="code-label animate" style="color:var(--green)">//&nbsp;system handshake initiated</div>
+  <h1 class="hero-title animate" style="animation-delay:0.1s">
+    <span class="brand">SALAD BYTE</span>
+    <span class="cross">×</span>
+    <span class="partner">THE SWEAT<br>ARENA</span>
+  </h1>
+  <p class="hero-sub animate" style="animation-delay:0.2s">A Partnership Protocol to Power Pune's Hardest Workers.</p>
+  <div class="hero-divider animate" style="animation-delay:0.25s"></div>
+  <div class="pills animate" style="animation-delay:0.3s">
+    <div class="pill">
+      <div class="pill-val">PUNE</div>
+      <div class="pill-label">CITY</div>
+    </div>
+    <div class="pill">
+      <div class="pill-val">₹175</div>
+      <div class="pill-label">MRP</div>
+    </div>
+    <div class="pill">
+      <div class="pill-val">25–30%</div>
+      <div class="pill-label">GYM MARGIN</div>
+    </div>
+    <div class="pill">
+      <div class="pill-val">250g+</div>
+      <div class="pill-label">PER BOX</div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: PROBLEM -->
+<section class="slide" id="s2">
+  <div class="accent-bar"></div>
+  <div class="code-label animate" style="color:var(--red)">//&nbsp;critical system error detected</div>
+  <h2 class="slide-title animate" style="animation-delay:0.1s">THE NUTRITION GAP</h2>
+  <p class="slide-sub animate" style="animation-delay:0.15s">Your members train like athletes. But lunch breaks the build.</p>
+
+  <div class="problem-grid">
+    <div class="problem-card red animate" style="animation-delay:0.2s">
+      <div class="card-icon">⚠️</div>
+      <div class="card-title" style="color:var(--red)">CRASH AT NOON</div>
+      <div class="card-body">Post-workout, members fuel up on oily canteen food — undoing every rep they just put in.</div>
+    </div>
+    <div class="problem-card gold animate" style="animation-delay:0.3s">
+      <div class="card-icon">⚡</div>
+      <div class="card-title" style="color:var(--gold)">PROTEIN DEFICIT</div>
+      <div class="card-body">High-effort training demands high protein. The local food market consistently fails to deliver it.</div>
+    </div>
+    <div class="problem-card green animate" style="animation-delay:0.4s">
+      <div class="card-icon">🏋️</div>
+      <div class="card-title" style="color:var(--green)">NO CLEAN OPTION</div>
+      <div class="card-body">Zero structured, affordable, protein-forward meals within reach of the gym floor.</div>
+    </div>
+  </div>
+
+  <div class="alert-bar animate" style="animation-delay:0.5s">
+    RESULT: Members leave gains at the table — literally. The gym loses a high-value retention hook.
+  </div>
+</section>
+
+<!-- SLIDE 3: MENU -->
+<section class="slide" id="s3">
+  <div class="accent-bar"></div>
+  <div class="code-label animate" style="color:var(--green)">//&nbsp;weekly build schedule v1.0</div>
+  <h2 class="slide-title animate" style="animation-delay:0.1s">THE 6-DAY PROTEIN PROTOCOL</h2>
+  <p class="slide-sub animate" style="animation-delay:0.15s">Precision nutrition. Programmed daily. 250g+ per deployment.</p>
+
+  <div class="menu-grid">
+    <div class="menu-card animate" style="animation-delay:0.2s">
+      <div class="menu-day">MON</div>
+      <div class="menu-content">
+        <div class="menu-emoji">🌱</div>
+        <div class="menu-name">Mix Sprout Power Salad</div>
+      </div>
+    </div>
+    <div class="menu-card animate" style="animation-delay:0.25s">
+      <div class="menu-day">TUE</div>
+      <div class="menu-content">
+        <div class="menu-emoji">🫘</div>
+        <div class="menu-name">Rajma &amp; Tofu Protein Salad</div>
+      </div>
+    </div>
+    <div class="menu-card animate" style="animation-delay:0.3s">
+      <div class="menu-day">WED</div>
+      <div class="menu-content">
+        <div class="menu-emoji">⚡</div>
+        <div class="menu-name">Chatpata Chana Salad</div>
+      </div>
+    </div>
+    <div class="menu-card animate" style="animation-delay:0.35s">
+      <div class="menu-day">THU</div>
+      <div class="menu-content">
+        <div class="menu-emoji">💪</div>
+        <div class="menu-name">Soya Chunks &amp; Paneer Salad</div>
+      </div>
+    </div>
+    <div class="menu-card animate" style="animation-delay:0.4s">
+      <div class="menu-day">FRI</div>
+      <div class="menu-content">
+        <div class="menu-emoji">🥗</div>
+        <div class="menu-name">Exotic Mix Veg Salad</div>
+      </div>
+    </div>
+    <div class="menu-card animate" style="animation-delay:0.45s">
+      <div class="menu-day">SAT</div>
+      <div class="menu-content">
+        <div class="menu-emoji">🔋</div>
+        <div class="menu-name">Quinoa Veggie Salad</div>
+      </div>
+    </div>
+  </div>
+  <div class="menu-footer animate" style="animation-delay:0.5s">250g+ &nbsp;|&nbsp; High-Protein &nbsp;|&nbsp; 100% Vegetarian &nbsp;|&nbsp; Freshly Assembled Daily</div>
+</section>
+
+<!-- SLIDE 4: ECONOMICS -->
+<section class="slide" id="s4">
+  <div class="accent-bar"></div>
+  <div class="code-label animate" style="color:var(--gold)">//&nbsp;revenue module: gym.exe</div>
+  <h2 class="slide-title animate" style="animation-delay:0.1s">THE UNIT ECONOMICS</h2>
+  <p class="slide-sub animate" style="animation-delay:0.15s">Every box sold is passive income for The Sweat Arena.</p>
+
+  <div class="econ-grid">
+    <div class="econ-card red animate" style="animation-delay:0.2s">
+      <div class="econ-icon">⚠️</div>
+      <div class="econ-val">₹250+</div>
+      <div class="econ-label">MARKET RATE</div>
+      <div class="econ-desc">Premium salad, Pune market</div>
+    </div>
+    <div class="econ-card green animate" style="animation-delay:0.3s">
+      <div class="econ-icon">⚡</div>
+      <div class="econ-val">₹175</div>
+      <div class="econ-label">SALAD BYTE MRP</div>
+      <div class="econ-desc">Disruptive. Accessible. Premium.</div>
+    </div>
+    <div class="econ-card gold animate" style="animation-delay:0.4s">
+      <div class="econ-icon">💰</div>
+      <div class="econ-val">25–30%</div>
+      <div class="econ-label">YOUR COMMISSION</div>
+      <div class="econ-desc">Per box sold. Zero effort.</div>
+    </div>
+  </div>
+
+  <div class="projection-bar animate" style="animation-delay:0.5s">
+    💰&nbsp; SAMPLE: 30 boxes/day &nbsp;×&nbsp; ₹175 &nbsp;=&nbsp; ₹5,250 revenue &nbsp;|&nbsp; Your share: ₹1,312–₹1,575 / day — ZERO operational overhead
+  </div>
+</section>
+
+<!-- SLIDE 5: DEPLOYMENT -->
+<section class="slide" id="s5">
+  <div class="accent-bar"></div>
+  <div class="code-label animate" style="color:var(--teal)">//&nbsp;operational pipeline: zero waste architecture</div>
+  <h2 class="slide-title animate" style="animation-delay:0.1s">DEPLOYMENT LOGIC</h2>
+  <p class="slide-sub animate" style="animation-delay:0.15s">Frictionless. Reliable. Engineered to eliminate overstock.</p>
+
+  <div class="deploy-grid">
+    <div class="deploy-card animate" style="animation-delay:0.2s">
+      <div class="step-num">01</div>
+      <div class="deploy-title" style="color:var(--teal)">MEMBER PRE-ORDER</div>
+      <div class="deploy-body">Members place orders by <strong style="color:var(--white)">10 PM</strong> the previous day via WhatsApp or QR link at the desk.</div>
+    </div>
+    <div class="deploy-card animate" style="animation-delay:0.3s">
+      <div class="step-num">02</div>
+      <div class="deploy-title" style="color:var(--green)">CUT-OFF SYNC</div>
+      <div class="deploy-body">10 PM cut-off ensures exact production — zero overstock, zero food waste, ever.</div>
+    </div>
+    <div class="deploy-card animate" style="animation-delay:0.4s">
+      <div class="step-num">03</div>
+      <div class="deploy-title" style="color:var(--lime)">FRESH DISPATCH</div>
+      <div class="deploy-body">Salad Byte assembles &amp; delivers daily to the gym by lunch hour, freshly made.</div>
+    </div>
+    <div class="deploy-card animate" style="animation-delay:0.5s">
+      <div class="step-num">04</div>
+      <div class="deploy-title" style="color:var(--gold)">GYM HANDOFF</div>
+      <div class="deploy-body">Staff distributes pre-tagged boxes. No kitchen. No fuss. Pure passive revenue.</div>
+    </div>
+  </div>
+
+  <div class="zero-waste animate" style="animation-delay:0.6s">
+    // ZERO WASTE PROTOCOL: We only build what's ordered. Always.
+  </div>
+</section>
+
+<!-- SLIDE 6: BETA -->
+<section class="slide" id="s6">
+  <div class="accent-bar"></div>
+  <div class="code-label animate" style="color:var(--lime)">//&nbsp;QA environment: trainer verification build</div>
+  <h2 class="slide-title animate" style="animation-delay:0.1s">BETA TESTING</h2>
+  <p class="slide-sub animate" style="animation-delay:0.15s">Don't take our word for it — let your trainers run the quality test.</p>
+
+  <div class="beta-grid">
+    <div class="beta-main animate" style="animation-delay:0.2s">
+      <div style="font-size:28px">🧪</div>
+      <div class="beta-offer">FREE TASTING SESSION</div>
+      <ul class="beta-points">
+        <li>
+          <span class="bp-arrow">→</span>
+          Gym trainers receive a complimentary tasting of the Protein Protocol menu — curated selections from our weekly build.
+        </li>
+        <li>
+          <span class="bp-arrow">→</span>
+          Trainers become organic brand ambassadors — credibility unlocked from the gym floor itself.
+        </li>
+        <li>
+          <span class="bp-arrow">→</span>
+          No upfront investment. No risk. Just proof of concept.
+        </li>
+      </ul>
+    </div>
+    <div class="beta-side animate" style="animation-delay:0.3s">
+      <div class="beta-side-title">WHY THIS MATTERS</div>
+      <div class="why-point">
+        <div class="why-bar"></div>
+        <span>Trainers directly influence what members eat before &amp; after workouts.</span>
+      </div>
+      <div class="why-point">
+        <div class="why-bar"></div>
+        <span>Verified taste = confident upsell on the gym floor, every single day.</span>
+      </div>
+      <div class="why-point">
+        <div class="why-bar"></div>
+        <span>Zero commitment ask — pure transparency before the partnership begins.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="beta-footer animate" style="animation-delay:0.4s">
+    🧪 &nbsp; THE PROTOCOL ONLY SHIPS AFTER YOUR TEAM APPROVES THE BUILD.
+  </div>
+</section>
+
+<!-- SLIDE 7: CTA -->
+<section class="slide" id="s7">
+  <div class="accent-bar"></div>
+  <div class="code-label animate" style="color:var(--orange)">//&nbsp;awaiting confirmation — initiate protocol</div>
+  <h1 class="cta-title animate" style="animation-delay:0.1s">
+    <span class="line1">INITIALIZE</span>
+    <span class="line2">PARTNERSHIP.</span>
+  </h1>
+  <p class="cta-sub animate" style="animation-delay:0.2s">One handshake. One tasting session. One city-defining nutrition partnership.</p>
+  <div class="cta-divider animate" style="animation-delay:0.25s"></div>
+
+  <div class="contact-grid animate" style="animation-delay:0.3s">
+    <a class="contact-card green" href="tel:+918233787904">
+      <div class="contact-icon">📞</div>
+      <div>
+        <div class="contact-label">CALL / WHATSAPP</div>
+        <div class="contact-val">+91 82337 87904</div>
+      </div>
+    </a>
+    <a class="contact-card orange" href="https://www.instagram.com/saladbytepune/" target="_blank">
+      <div class="contact-icon">📸</div>
+      <div>
+        <div class="contact-label">INSTAGRAM</div>
+        <div class="contact-val">@saladbytepune</div>
+      </div>
+    </a>
+  </div>
+
+  <a class="website-bar animate" style="animation-delay:0.4s" href="https://saladbyte.com/" target="_blank">
+    <span>🌐</span>
+    <span>saladbyte.com</span>
+  </a>
+
+  <div class="cta-footer animate" style="animation-delay:0.5s">
+    Salad Byte &copy; 2025 &nbsp;|&nbsp; Pune's Nutrition OS &nbsp;|&nbsp; Fueling Hinjewadi &middot; Magarpatta &middot; Baner
+  </div>
+</section>
+
+<script>
+  // Intersection observer for animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+
+  // Nav dots
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.dot');
+
+  function scrollToSlide(i) {
+    slides[i].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.intersectionRatio > 0.4) {
+        const idx = Array.from(slides).indexOf(e.target);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+    });
+  }, { threshold: 0.4 });
+
+  slides.forEach(s => slideObserver.observe(s));
+
+  // Trigger first slide animations on load
+  document.querySelectorAll('#s1 .animate').forEach(el => el.classList.add('visible'));
+</script>
+</body>
+</html>
